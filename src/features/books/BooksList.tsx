@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
+import { useState } from 'react';
 
 // -----------------------------------------------------------------------------
 // BooksList Component
@@ -20,6 +21,9 @@ type Book = {
   rating: number;
 };
 
+type BooksData = { books: Book[] };
+type BooksVars = { limit: number; skip?: number; search?: string };
+
 const BOOKS_QUERY = gql`
   query Books($limit: Int!, $skip: Int, $search: String) {
     books(limit: $limit, skip: $skip, search: $search) {
@@ -31,33 +35,32 @@ const BOOKS_QUERY = gql`
   }
 `;
 
-type BooksData = {
-  books: Book[];
-};
-
-type BooksVars = {
-  limit: number;
-  skip?: number;
-  search?: string;
-};
-
 export function BooksList() {
+  const [search, setSearch] = useState('');
   const { data, loading, error, refetch } = useQuery<BooksData, BooksVars>(BOOKS_QUERY, {
-    variables: { limit: 10, skip: 0 },
+    variables: { limit: 10, skip: 0, search },
   });
-
-  if (loading) return <div>Loading…</div>;
-  if (error)
-    return (
-      <div>
-        Error loading books.&nbsp;
-        <button onClick={() => refetch()}>Retry</button>
-      </div>
-    );
 
   return (
     <div style={{ padding: 16 }}>
       <h2>Books</h2>
+      <input
+        type="text"
+        placeholder="Search books..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ marginBottom: 12, padding: 6 }} // todo use component library instead of inline styles
+      />
+
+      {loading && <p>Loading…</p>}
+      {error && (
+        <p>
+          Error loading books. <button onClick={() => refetch()}>Retry</button>
+        </p>
+      )}
+
+      {!loading && !error && data?.books?.length === 0 && <p>No books found.</p>}
+
       <ul>
         {data?.books?.map((b) => (
           <li key={b.id}>
