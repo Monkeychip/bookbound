@@ -1,73 +1,35 @@
-# React + TypeScript + Vite
+# 📚 Bookbound - Example Inc.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A frontend rewrite starting with a clean React + Typescript foundation.
 
-Currently, two official plugins are available:
+## Background
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Bookbound** began as a scrappy experiment — a small web app where friends could share what they’re reading and discover new books.
 
-## React Compiler
+The MVP took off quickly: people loved logging their books, rating them, and trading recommendations.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+But the prototype was built for speed, not scale.  
 
-## Expanding the ESLint configuration
+As Bookbound’s user base grew, it became harder to maintain and nearly impossible to add new features like _Authors_, _Reviews_, or _Reading Lists_ without breaking something.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Now the team is making a **clean break from the past** to establish a strong, scalable foundation — one that future engineers can confidently build on.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The goals for this rewrite:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Define consistent **routing and navigation patterns**.
+    
+- Establish a reusable **data-access and caching layer** with Apollo Client.
+    
+- Demonstrate **CRUD flows** (create, edit, delete) for the Books feature.
+    
+- Use **typed validation** with `react-hook-form` + `zod`.
+    
+- Apply a **modern UI library (Mantine)** that can evolve into a design system.
+    
+- Provide **unit/integration tests** to set expectations for future contributors.
+    
+The result will serve as the blueprint for Bookbound’s new frontend architecture — a maintainable, extensible codebase ready for future growth.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Quick Start
+1. npm i
+2. npm run dev → http://localhost:5173
