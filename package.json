@@ -24,7 +24,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@apollo/client": "^4.0.7",
+    "@apollo/client": "^3.14.0",
     "@apollo/server": "^5.0.0",
     "graphql": "^16.11.0",
     "husky": "^9.1.7",
