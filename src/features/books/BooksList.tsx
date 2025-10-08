@@ -1,3 +1,4 @@
+import { TextInput, List, ThemeIcon } from '@mantine/core';
 import { gql, useQuery } from '@apollo/client';
 import { useState } from 'react';
 
@@ -14,13 +15,7 @@ import { useState } from 'react';
 // TODO: Add pagination, styling, and sorting features.
 // -----------------------------------------------------------------------------
 
-type Book = {
-  id: number;
-  title: string;
-  author: string;
-  rating: number;
-};
-
+type Book = { id: number; title: string; author: string; rating: number };
 type BooksData = { books: Book[] };
 type BooksVars = { limit: number; skip?: number; search?: string };
 
@@ -43,13 +38,13 @@ export function BooksList() {
 
   return (
     <div style={{ padding: 16 }}>
-      <h2>Books</h2>
-      <input
-        type="text"
-        placeholder="Search books..."
+      <h2 style={{ marginBottom: 8 }}>Books</h2>
+
+      <TextInput
+        placeholder="Search books…"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: 12, padding: 6 }} // todo use component library instead of inline styles
+        onChange={(e) => setSearch(e.currentTarget.value)}
+        mb="sm"
       />
 
       {loading && <p>Loading…</p>}
@@ -58,16 +53,15 @@ export function BooksList() {
           Error loading books. <button onClick={() => refetch()}>Retry</button>
         </p>
       )}
-
       {!loading && !error && data?.books?.length === 0 && <p>No books found.</p>}
 
-      <ul>
+      <List spacing="xs" withPadding>
         {data?.books?.map((b) => (
-          <li key={b.id}>
+          <List.Item key={b.id} icon={<ThemeIcon size={10} radius="xl" />}>
             <strong>{b.title}</strong> — {b.author} ({b.rating})
-          </li>
+          </List.Item>
         ))}
-      </ul>
+      </List>
     </div>
   );
 }
