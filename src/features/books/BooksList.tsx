@@ -1,5 +1,6 @@
 import { Button, Group, List, TextInput, Textarea, NumberInput, ThemeIcon } from '@mantine/core';
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { useDebouncedValue } from '@mantine/hooks';
+import { gql, useMutation, useQuery, NetworkStatus } from '@apollo/client';
 import { useState } from 'react';
 
 // -----------------------------------------------------------------------------
@@ -18,6 +19,14 @@ import { useState } from 'react';
 type Book = { id: number; title: string; author: string; rating: number };
 type BooksData = { books: Book[] };
 type BooksVars = { limit: number; skip?: number; search?: string };
+
+type CreateBookData = { createBook: Book };
+type CreateBookVars = {
+  input: { title: string; author: string; description: string; rating?: number };
+};
+
+type DeleteBookData = { deleteBook: boolean };
+type DeleteBookVars = { id: string | number };
 
 const BOOKS_QUERY = gql`
   query Books($limit: Int!, $skip: Int, $search: String) {
@@ -41,51 +50,97 @@ const CREATE_BOOK = gql`
   }
 `;
 
+const DELETE_BOOK = gql`
+  mutation DeleteBook($id: ID!) {
+    deleteBook(id: $id)
+  }
+`;
+
 export function BooksList() {
   const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebouncedValue(search, 300);
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState<number | ''>('');
 
+  // Safely handle Mantine NumberInput's string|number
   const handleRatingChange = (v: string | number) => {
     if (v === '' || typeof v === 'number') {
       setRating(v);
     } else {
-      // if Mantine ever sends a string, coerce safely
       const n = Number(v);
       setRating(Number.isNaN(n) ? '' : n);
     }
   };
 
-  const { data, loading, error, refetch } = useQuery<BooksData, BooksVars>(BOOKS_QUERY, {
-    variables: { limit: 10, skip: 0, search },
-  });
+  const VARS: BooksVars = { limit: 10, skip: 0, search: debouncedSearch || undefined };
 
-  const [createBook, { loading: creating }] = useMutation(CREATE_BOOK, {
-    // Prepend new item into the current query’s list so the UI updates instantly
-    update(cache, { data }) {
-      const newBook = data?.createBook;
-      if (!newBook) return;
+  const { data, loading, error, refetch, networkStatus } = useQuery<BooksData, BooksVars>(
+    BOOKS_QUERY,
+    {
+      variables: VARS,
+      fetchPolicy: 'cache-and-network',
+      returnPartialData: true,
+      notifyOnNetworkStatusChange: true,
+    },
+  );
 
-      // read current result for the same variables
-      const existing = cache.readQuery<BooksData, BooksVars>({
-        query: BOOKS_QUERY,
-        variables: { limit: 10, skip: 0, search },
-      });
+  const isSearching =
+    networkStatus === NetworkStatus.setVariables || networkStatus === NetworkStatus.refetch;
 
-      if (existing?.books) {
+  // --- Create ---
+  const [createBook, { loading: creating }] = useMutation<CreateBookData, CreateBookVars>(
+    CREATE_BOOK,
+    {
+      update(cache, { data }) {
+        const newBook = data?.createBook;
+        if (!newBook) return;
+
+        const existing = cache.readQuery<BooksData, BooksVars>({
+          query: BOOKS_QUERY,
+          variables: VARS,
+        });
+
+        if (existing?.books) {
+          cache.writeQuery<BooksData, BooksVars>({
+            query: BOOKS_QUERY,
+            variables: VARS,
+            data: { books: [newBook, ...existing.books] },
+          });
+        }
+      },
+    },
+  );
+
+  // --- Delete ---
+  const [deleteBook, { loading: deleting }] = useMutation<DeleteBookData, DeleteBookVars>(
+    DELETE_BOOK,
+    {
+      update(cache, _result, { variables }) {
+        const id = variables?.id;
+        if (!id) return;
+
+        const existing = cache.readQuery<BooksData, BooksVars>({
+          query: BOOKS_QUERY,
+          variables: VARS,
+        });
+
+        if (!existing?.books) return;
+
         cache.writeQuery<BooksData, BooksVars>({
           query: BOOKS_QUERY,
-          variables: { limit: 10, skip: 0, search },
-          data: { books: [newBook, ...existing.books] },
+          variables: VARS,
+          data: {
+            books: existing.books.filter((b) => String(b.id) !== String(id)),
+          },
         });
-      }
+      },
     },
-  });
+  );
 
   async function onCreate() {
-    if (!title.trim() || !author.trim()) return; // ultra-basic validation
+    if (!title.trim() || !author.trim()) return;
     await createBook({
       variables: {
         input: {
@@ -96,7 +151,6 @@ export function BooksList() {
         },
       },
     });
-    // reset fields
     setTitle('');
     setAuthor('');
     setDescription('');
@@ -114,8 +168,9 @@ export function BooksList() {
         onChange={(e) => setSearch(e.currentTarget.value)}
         mb="sm"
       />
+      {isSearching && <p>Searching…</p>}
 
-      {/* Create form */}
+      {/* Create Form */}
       <Group align="flex-end" mb="md" wrap="wrap">
         <TextInput
           label="Title"
@@ -155,6 +210,7 @@ export function BooksList() {
         </Button>
       </Group>
 
+      {/* States */}
       {loading && <p>Loading…</p>}
       {error && (
         <p>
@@ -163,10 +219,20 @@ export function BooksList() {
       )}
       {!loading && !error && data?.books?.length === 0 && <p>No books found.</p>}
 
+      {/* List */}
       <List spacing="xs" withPadding>
         {data?.books?.map((b) => (
           <List.Item key={b.id} icon={<ThemeIcon size={10} radius="xl" />}>
             <strong>{b.title}</strong> — {b.author} ({b.rating})
+            <Button
+              size="xs"
+              variant="light"
+              ml="sm"
+              loading={deleting}
+              onClick={() => deleteBook({ variables: { id: b.id } })}
+            >
+              Delete
+            </Button>
           </List.Item>
         ))}
       </List>
