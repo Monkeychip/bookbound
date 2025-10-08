@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/client';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
@@ -17,7 +18,7 @@ import App from './App';
 // globally here so any feature can trigger toasts or alerts.
 //
 // App’s foundation:
-// React → ApolloProvider → MantineProvider → App
+// React → ApolloProvider → MantineProvider → BrowserRouter → App
 // -----------------------------------------------------------------------------
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -25,7 +26,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ApolloProvider client={apolloClient}>
       <MantineProvider defaultColorScheme="light">
         <Notifications />
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </MantineProvider>
     </ApolloProvider>
   </React.StrictMode>,

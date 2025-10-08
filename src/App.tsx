@@ -1,10 +1,41 @@
-import { BooksList } from './features/books/BooksList';
-import { AppLayout } from './layouts/AppLayout';
+import { Group, Anchor, Container, Title, Divider } from '@mantine/core';
+import { Link, useLocation } from 'react-router-dom';
+import { AppRoutes } from './app/AppRoutes';
+
+// -----------------------------------------------------------------------------
+// App Component
+//
+// The root layout for the Bookbound frontend.
+//
+// Includes a minimal navigation bar with route links (`Books`, `About`)
+// and a simple highlight for the active route.
+//
+// Mantine's Container + Group + Anchor provide structure and accessible
+// styling without custom CSS. AppRoutes handles rendering of page-level
+// content below the navigation.
+// -----------------------------------------------------------------------------
 
 export default function App() {
+  const { pathname } = useLocation();
+
   return (
-    <AppLayout>
-      <BooksList />
-    </AppLayout>
+    <Container size="sm" py="xl">
+      <Title order={1} mb="md">
+        Bookbound
+      </Title>
+
+      <Group gap="md" mb="sm">
+        <Anchor component={Link} to="/books" c={pathname === '/books' ? 'blue' : undefined}>
+          Books
+        </Anchor>
+        <Anchor component={Link} to="/about" c={pathname === '/about' ? 'blue' : undefined}>
+          About
+        </Anchor>
+      </Group>
+
+      <Divider mb="lg" />
+
+      <AppRoutes />
+    </Container>
   );
 }
