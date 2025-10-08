@@ -11,7 +11,7 @@ import { useState } from 'react';
 // • `useQuery` runs automatically on mount and updates the component state.
 // • If an error occurs, the component displays a retry button using `refetch`.
 //
-// TODO: Add pagination, search, styling, and sorting features.
+// TODO: Add pagination, styling, and sorting features.
 // -----------------------------------------------------------------------------
 
 type Book = {
