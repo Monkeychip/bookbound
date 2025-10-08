@@ -29,3 +29,9 @@ The result will serve as the blueprint for Bookbound’s new frontend architectu
 
 1. npm i
 2. npm run dev → http://localhost:5173
+
+## Use of GenAI
+
+Parts of this project (documentation formatting, initial TypeScript scaffolding, and comments)
+were augmented using GenAI tools. All code, logic, and architectural decisions were reviewed
+and refined manually to ensure correctness and maintainability.
