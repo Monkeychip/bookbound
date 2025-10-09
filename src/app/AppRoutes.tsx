@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { BooksList, BookDetail, CreateBookPage, BookEditPage } from '@features/books';
 import { AboutPage } from './AboutPage';
+import { Layout } from './Layout';
 
 // -----------------------------------------------------------------------------
 // AppRoutes
@@ -44,13 +45,15 @@ import { AboutPage } from './AboutPage';
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/books" replace />} />
-      <Route path="/books" element={<BooksList />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/books/:bookId" element={<BookDetail />} />
-      <Route path="/books/new" element={<CreateBookPage />} />
-      <Route path="/books/:bookId/edit" element={<BookEditPage />} />
-      <Route path="*" element={<Navigate to="/books" replace />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Navigate to="/books" replace />} />
+        <Route path="/books" element={<BooksList />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/books/:bookId" element={<BookDetail />} />
+        <Route path="/books/new" element={<CreateBookPage />} />
+        <Route path="/books/:bookId/edit" element={<BookEditPage />} />
+        <Route path="*" element={<Navigate to="/books" replace />} />
+      </Route>
     </Routes>
   );
 }

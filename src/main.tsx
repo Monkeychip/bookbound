@@ -5,7 +5,11 @@ import { ApolloProvider } from '@apollo/client';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { apolloClient } from './app/apollo';
+import { ThemeProvider } from './app/ThemeProvider';
 import App from './App';
+
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css'; // TODO: for notifications, remove if unused
 
 // -----------------------------------------------------------------------------
 // Entry point for the React application.
@@ -18,7 +22,7 @@ import App from './App';
 // globally here so any feature can trigger toasts or alerts.
 //
 // App’s foundation:
-// React → ApolloProvider → MantineProvider → BrowserRouter → App
+// React → ApolloProvider → MantineProvider → BrowserRouter → ThemeProvider → App
 // -----------------------------------------------------------------------------
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -27,7 +31,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <MantineProvider defaultColorScheme="light">
         <Notifications />
         <BrowserRouter>
-          <App />
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
         </BrowserRouter>
       </MantineProvider>
     </ApolloProvider>
