@@ -97,6 +97,7 @@ export function BooksList() {
       </Group>
 
       {/* Search */}
+      {/* TODO: option to clear with esc or button click */}
       <TextInput
         placeholder="Search books…"
         value={search}

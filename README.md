@@ -30,8 +30,23 @@ The result will serve as the blueprint for Bookbound’s new frontend architectu
 1. npm i
 2. npm run dev → http://localhost:5173
 
-## Use of GenAI
+### Use of GenAI
 
 Parts of this project (documentation formatting, initial TypeScript scaffolding, and comments)
 were augmented using GenAI tools. All code, logic, and architectural decisions were reviewed
 and refined manually to ensure correctness and maintainability.
+
+### Dummy data & caching behavior
+
+This demo uses DummyJSON’s `/products` endpoints as a stand-in for “books”.
+DummyJSON **does not persist** newly created items, so fetching a newly created
+book by id will not succeed on the backend.
+
+To provide a seamless UX and to demonstrate scalable caching patterns, the app:
+
+- Uses an **Apollo cache redirect** for `Query.book` to resolve book detail
+  pages from the normalized cache (by `id`) immediately after creation.
+- Sets `fetchPolicy: 'cache-first'` on the detail query so a cache hit is
+  sufficient and we avoid a failing network request.
+- If the page is hard-refreshed, the in-memory cache is empty; the backend will
+  not find the non-persisted item.
