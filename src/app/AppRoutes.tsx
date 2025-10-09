@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { BooksList } from '../features/books/BooksList';
 import { BookDetail } from '../features/books/BookDetail';
+import { CreateBookPage } from '../features/books/CreateBookPage';
 import { AboutPage } from './AboutPage';
 
 // -----------------------------------------------------------------------------
@@ -50,6 +51,7 @@ export function AppRoutes() {
       <Route path="/books" element={<BooksList />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/books/:bookId" element={<BookDetail />} />
+      <Route path="/books/new" element={<CreateBookPage />} />
       <Route path="*" element={<Navigate to="/books" replace />} />
     </Routes>
   );
