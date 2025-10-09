@@ -1,11 +1,11 @@
 import { useMutation } from '@apollo/client';
-import { CREATE_BOOK } from './api/mutations';
+import { CREATE_BOOK } from '../api/mutations';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Title, Text } from '@mantine/core';
-import { BookForm, BookFormValues } from './BookForm';
+import { BookForm, BookFormValues } from '@/features/books/components';
 
 /**
- * CreateBookPage
+ * BookCreate
  *
  * Uses the shared <BookForm /> to create a new book, then navigates to the
  * new book's detail page (/books/:id) on success.
@@ -15,7 +15,7 @@ import { BookForm, BookFormValues } from './BookForm';
  * - Call CREATE_BOOK mutation and navigate to the new detail page
  *
  * @example
- * <Route path="/books/new" element={<CreateBookPage />} />
+ * <Route path="/books/new" element={<BookCreate />} />
  */
 
 type Book = { id: number; title: string; author: string; rating: number; description: string };
@@ -23,7 +23,7 @@ type Book = { id: number; title: string; author: string; rating: number; descrip
 type CreateBookData = { createBook: Book };
 type CreateBookVars = { input: BookFormValues };
 
-export function CreateBookPage() {
+export function BookCreate() {
   const navigate = useNavigate();
   const [createBook, { loading }] = useMutation<CreateBookData, CreateBookVars>(CREATE_BOOK);
 

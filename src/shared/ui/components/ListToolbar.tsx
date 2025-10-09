@@ -33,7 +33,7 @@ type Props = {
   onSortOrderChange: (v: SortOrder) => void;
 };
 
-export default function ListToolbar({
+export function ListToolbar({
   search,
   onSearchChange,
   sortField,

@@ -1,8 +1,8 @@
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import { BOOK_QUERY } from './api/queries';
+import { BOOK_QUERY } from '../api/queries';
 import { Button, Group, Rating, Stack, Text, Title } from '@mantine/core';
-import EmptyState from '../../components/EmptyState';
+import EmptyState from '@components/EmptyState';
 
 /**
  * BookDetail

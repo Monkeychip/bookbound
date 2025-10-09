@@ -66,6 +66,6 @@ The project defines path aliases to keep imports concise and consistent. Prefer 
 Example:
 
 ```ts
-import BooksList from '@components/BooksList';
+import BreadcrumbsBar from '@components/BreadcrumbsBar';
 import { BookDetail } from '@features/books';
 ```

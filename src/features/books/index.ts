@@ -1,6 +1,1 @@
-// Barrel file for all exports in the "books" feature.
-// Keeps route imports tidy and lets internal file structure change freely.
-
-export { BookDetail } from './BookDetail';
-export { CreateBookPage } from './CreateBookPage';
-export { BookEditPage } from './BookEditPage';
+// TODO: Barrel for feature exports

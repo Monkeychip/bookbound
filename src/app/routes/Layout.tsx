@@ -1,7 +1,7 @@
 import { Anchor, AppShell, Container, Group, Image, Title } from '@mantine/core';
-import { BookBreadcrumbs } from '../../components/BookBreadcrumbs';
+import { BreadcrumbsBar } from '../../shared/ui/components/BreadcrumbsBar';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import logo from '@/assets/next-chapter-mark.svg';
+import logo from '@/shared/assets/next-chapter-mark.svg';
 
 /**
  * Layout
@@ -94,7 +94,7 @@ export function Layout() {
 
       <AppShell.Main id="main" bg="transparent">
         <Container size="lg" py="lg">
-          <BookBreadcrumbs />
+          <BreadcrumbsBar />
           <Outlet />
         </Container>
       </AppShell.Main>

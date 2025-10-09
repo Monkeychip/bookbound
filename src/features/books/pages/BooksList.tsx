@@ -1,13 +1,11 @@
 import { Button, Group, Pagination, Stack, Text } from '@mantine/core';
-import EmptyState from './EmptyState';
+import { ListRow, ListToolbar, EmptyState } from '../../../shared/ui/components';
 import { useDebouncedValue } from '@mantine/hooks';
-import { useMutation, useQuery, NetworkStatus } from '@apollo/client';
+import { useMutation, useQuery, NetworkStatus, DocumentNode } from '@apollo/client';
 import { BOOKS_QUERY } from '@features/books/api/queries';
 import { DELETE_BOOK } from '@features/books/api/mutations';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import BookRow from './BookRow';
-import ListToolbar from './ListToolbar';
 
 /**
  * BooksList
@@ -44,7 +42,23 @@ type DeleteBookVars = { id: string | number };
 
 const PAGE_SIZE = 10;
 
-export function BooksList() {
+type Entity = { id: string | number; title?: string; subtitle?: string } & Record<string, unknown>;
+
+type BooksListProps = {
+  basePath?: string;
+  queryDocument?: DocumentNode;
+  deleteMutation?: DocumentNode;
+  renderTitle?: (e: Entity) => React.ReactNode;
+  renderMeta?: (e: Entity) => React.ReactNode;
+};
+
+export function BooksList({
+  basePath = '/books',
+  queryDocument = BOOKS_QUERY,
+  deleteMutation = DELETE_BOOK,
+  renderTitle,
+  renderMeta,
+}: BooksListProps) {
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 300);
   const navigate = useNavigate();
@@ -60,7 +74,7 @@ export function BooksList() {
     sort: { field: sortField, order: sortOrder },
   };
   const { data, loading, error, refetch, networkStatus } = useQuery<BooksData, BooksVars>(
-    BOOKS_QUERY,
+    queryDocument,
     {
       variables: vars,
       fetchPolicy: 'cache-and-network',
@@ -105,7 +119,7 @@ export function BooksList() {
 
   // Delete with cache update
   const [deleteBook, { loading: deleting }] = useMutation<DeleteBookData, DeleteBookVars>(
-    DELETE_BOOK,
+    deleteMutation,
     {
       update(cache, _result, { variables }) {
         const id = variables?.id;
@@ -142,14 +156,24 @@ export function BooksList() {
           setSearch(v);
         }}
         sortField={sortField}
-        onSortFieldChange={(v) => {
+        onSortFieldChange={(
+          v: string | ((prevState: 'RATING' | 'TITLE') => 'RATING' | 'TITLE'),
+        ) => {
           setPage(1);
-          setSortField(v);
+          if (typeof v === 'function') {
+            setSortField(v);
+          } else if (v === 'RATING' || v === 'TITLE') {
+            setSortField(v);
+          }
         }}
         sortOrder={sortOrder}
-        onSortOrderChange={(v) => {
+        onSortOrderChange={(v: string | ((prevState: 'ASC' | 'DESC') => 'ASC' | 'DESC')) => {
           setPage(1);
-          setSortOrder(v);
+          if (typeof v === 'function') {
+            setSortOrder(v);
+          } else if (v === 'ASC' || v === 'DESC') {
+            setSortOrder(v);
+          }
         }}
       />
 
@@ -192,12 +216,14 @@ export function BooksList() {
 
       <Stack gap="xs" mt="sm">
         {data?.books?.items?.map((b) => (
-          <BookRow
+          <ListRow
             key={b.id}
-            book={b}
+            entity={b}
             onDelete={(id) => deleteBook({ variables: { id } })}
-            onDetails={(id) => navigate(`/books/${id}`)}
+            onDetails={(id) => navigate(`${basePath}/${id}`)}
             disabled={deleting}
+            renderTitle={renderTitle}
+            renderMeta={renderMeta}
           />
         ))}
       </Stack>
@@ -211,5 +237,3 @@ export function BooksList() {
     </div>
   );
 }
-
-export default BooksList;

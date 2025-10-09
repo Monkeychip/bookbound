@@ -11,7 +11,7 @@
       "@/*": ["*"],
       "@features/*": ["features/*"],
       "@assets/*": ["assets/*"],
-      "@components/*": ["components/*"]
+      "@components/*": ["shared/ui/components/*"]
     }
   },
   "include": ["src", "server", "vite.config.ts"]

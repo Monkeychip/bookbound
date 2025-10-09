@@ -1,15 +1,15 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { BOOK_QUERY } from './api/queries';
-import { UPDATE_BOOK } from './api/mutations';
-import { BookCore } from './api/fragments';
+import { BOOK_QUERY } from '../api/queries';
+import { UPDATE_BOOK } from '../api/mutations';
+import { BookCore } from '../api/fragments';
 import { Button, Group, Stack, Text, Title } from '@mantine/core';
-import { BookForm, BookFormValues } from './BookForm';
+import { BookForm, BookFormValues } from '@/features/books/components';
 import { Link as RouterLink } from 'react-router-dom';
-import EmptyState from '../../components/EmptyState';
+import EmptyState from '@components/EmptyState';
 
 /**
- * BookEditPage
+ * BookEdit
  *
  * Loads a book, pre-fills <BookForm />, and updates via mutation. Uses
  * optimistic UI + cache write for instant feedback.
@@ -20,14 +20,14 @@ import EmptyState from '../../components/EmptyState';
  * - Update cache on mutation so detail and list views reflect changes
  *
  * @example
- * <Route path="/books/:bookId/edit" element={<BookEditPage />} />
+ * <Route path="/books/:bookId/edit" element={<BookEdit />} />
  */
 
 type Book = { id: number; title: string; author: string; rating: number; description: string };
 type BookData = { book: Book | null };
 type BookVars = { id: string };
 
-export function BookEditPage() {
+export function BookEdit() {
   const { bookId } = useParams<{ bookId: string }>();
   const navigate = useNavigate();
 
