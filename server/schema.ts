@@ -161,8 +161,7 @@ export const resolvers = {
       const field = args.sort?.field ?? 'RATING';
       const order = args.sort?.order ?? 'DESC';
 
-      // We’ll request a bigger page from DummyJSON so client-side sorting is accurate.
-      // DummyJSON caps at 100, so this is safe for demo purposes.
+      // Fetch a larger slice from DummyJSON so we can sort accurately on the server.
       const FETCH_LIMIT = 100;
 
       const base = args.search
@@ -173,16 +172,11 @@ export const resolvers = {
       if (!res.ok) throw new Error(`DummyJSON error: ${res.status}`);
       const data = await res.json();
 
-      // Defensive: make sure we have an array
       const rawList: unknown[] = Array.isArray((data as ProductListResponse)?.products)
         ? (data as ProductListResponse).products
         : [];
-      const total: number =
-        typeof (data as ProductListResponse).total === 'number'
-          ? (data as ProductListResponse).total
-          : rawList.length;
 
-      // Map to Book[]
+      // Map & type-guard
       const allBooks = rawList.filter(isDummyProduct).map(toBook);
 
       // Sort
@@ -197,14 +191,28 @@ export const resolvers = {
         return order === 'ASC' ? cmp : -cmp;
       });
 
-      // Paginate
-      const items = allBooks.slice(skip, skip + limit);
+      // ---- Pagination with clamp ----
+      const safeLimit = Math.max(0, limit);
+      const totalAfterFilter = allBooks.length;
+
+      if (safeLimit === 0) {
+        return { items: [], total: totalAfterFilter, skip: 0, limit: safeLimit };
+      }
+
+      const lastStart =
+        totalAfterFilter > 0 ? Math.floor((totalAfterFilter - 1) / safeLimit) * safeLimit : 0;
+
+      const effectiveSkip = Math.min(skip, lastStart);
+      const start = Math.max(0, effectiveSkip);
+      const end = start + safeLimit;
+
+      const items = allBooks.slice(start, end);
 
       return {
         items,
-        total,
-        skip,
-        limit,
+        total: totalAfterFilter,
+        skip: start,
+        limit: safeLimit,
       };
     },
     // Fetch a single book by ID

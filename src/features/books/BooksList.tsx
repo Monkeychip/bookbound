@@ -14,7 +14,7 @@ import {
 import { IconDots, IconArrowRight } from '@tabler/icons-react';
 import { useDebouncedValue } from '@mantine/hooks';
 import { gql, useMutation, useQuery, NetworkStatus } from '@apollo/client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // -----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ export function BooksList() {
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 300);
 
-  const [page, setPage] = useState(1); // 1-based for Mantine Pagination
+  const [page, setPage] = useState(1); // default to page 1;
   const [sortField, setSortField] = useState<'RATING' | 'TITLE'>('RATING');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
 
@@ -80,7 +80,6 @@ export function BooksList() {
     search: debouncedSearch || undefined,
     sort: { field: sortField, order: sortOrder },
   };
-
   const { data, loading, error, refetch, networkStatus } = useQuery<BooksData, BooksVars>(
     BOOKS_QUERY,
     {
@@ -91,10 +90,41 @@ export function BooksList() {
     },
   );
 
+  const total = data?.books?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  // Reset to page 1 when search/sort changes
+  // (so we don’t land on an empty page after filtering)
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, sortField, sortOrder]);
+
+  // If we're beyond the last page (e.g., after a new search), clamp it
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  useEffect(() => {
+    if (loading || error) return;
+
+    const itemsLen = data?.books?.items?.length ?? 0;
+    const last = Math.max(1, Math.ceil((data?.books?.total ?? 0) / PAGE_SIZE));
+
+    // If we’re on a later page that renders empty results, jump to the last page
+    // that *should* still have items (defensive against API off-by-one issues).
+    if (page > 1 && itemsLen === 0 && (data?.books?.total ?? 0) > 0) {
+      if (page > last) setPage(last);
+      // If page <= last but still empty (rare), step back one page as a safety net:
+      else setPage((p) => Math.max(1, p - 1));
+    }
+  }, [loading, error, page, data?.books?.items?.length, data?.books?.total]);
+
   const isSearching =
     networkStatus === NetworkStatus.setVariables || networkStatus === NetworkStatus.refetch;
 
-  // ----- Delete with cache update -----
+  // Delete with cache update
   const [deleteBook, { loading: deleting }] = useMutation<DeleteBookData, DeleteBookVars>(
     DELETE_BOOK,
     {
@@ -123,16 +153,6 @@ export function BooksList() {
       },
     },
   );
-
-  // Reset to page 1 when search/sort changes
-  // (so we don’t land on an empty page after filtering)
-
-  const searchKey = debouncedSearch + sortField + sortOrder;
-  // quick way to react on changes:
-  // (could also use useEffect(() => setPage(1), [debouncedSearch, sortField, sortOrder]))
-  if (searchKey && (vars.skip ?? 0) !== (page - 1) * PAGE_SIZE) {
-    /* no-op, keeps types quiet */
-  }
 
   return (
     <div style={{ padding: 16 }}>
@@ -196,7 +216,16 @@ export function BooksList() {
         </Group>
       )}
 
-      {!loading && !error && data?.books?.items?.length === 0 && <Text>No books found.</Text>}
+      {!loading && !error && total === 0 && (
+        <Stack gap="xs" mt="sm">
+          <Text>No books found.</Text>
+          {debouncedSearch && (
+            <Button variant="subtle" onClick={() => setSearch('')}>
+              Clear search
+            </Button>
+          )}
+        </Stack>
+      )}
 
       <Stack gap="xs" mt="sm">
         {data?.books?.items?.map((b) => (
@@ -261,14 +290,9 @@ export function BooksList() {
       </Stack>
 
       {/* Pagination */}
-      {data?.books && data.books.total > PAGE_SIZE && (
+      {totalPages > 1 && (data?.books?.items?.length ?? 0) > 0 && (
         <Group justify="center" mt="md">
-          <Pagination
-            total={Math.max(1, Math.ceil(data.books.total / PAGE_SIZE))}
-            value={page}
-            onChange={setPage}
-            size="sm"
-          />
+          <Pagination total={totalPages} value={page} onChange={setPage} size="sm" />
         </Group>
       )}
     </div>
