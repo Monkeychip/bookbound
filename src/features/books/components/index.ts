@@ -1,5 +1,3 @@
-// Barrel file for all exports in the "books" feature.
-// Keeps route imports tidy and lets internal file structure change freely.
-
-export * from '../pages';
+// Barrel file for feature-local components in the Books feature.
+// Only export UI components from this barrel to avoid circular re-exports.
 export { BookForm, type BookFormValues } from './BookForm';

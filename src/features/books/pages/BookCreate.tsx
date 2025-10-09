@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import { CREATE_BOOK } from '../api/mutations';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Title, Text } from '@mantine/core';
-import { BookForm, BookFormValues } from '@/features/books/components';
+import { BookForm, type BookFormValues } from '@/features/books';
 
 /**
  * BookCreate
