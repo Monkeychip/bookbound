@@ -4,13 +4,13 @@ A frontend rewrite starting with a clean React + Typescript foundation.
 
 ## Background
 
-**Next Chapter** began as a scrappy experiment — a small web app where friends could share what they’re reading and discover new books.
+**Next Chapter** began as a scrappy experiment — a small web app where friends could rate what they’re reading and discover new books.
 
 The MVP took off quickly: people loved logging their books, rating them, and trading recommendations.
 
 But the prototype was built for speed, not scale.
 
-As Next Chapter’s user base grew, it became harder to maintain and nearly impossible to add new features like _Authors_, _Reviews_, or _Reading Lists_ without breaking something.
+As Next Chapter’s user base grew, it became harder to maintain and nearly impossible to add new features like _Authors_, or _Reviews_ without breaking something.
 
 Now the team is making a **clean break from the past** to establish a strong, scalable foundation — one that future engineers can confidently build on.
 
@@ -19,7 +19,6 @@ The goals for this rewrite:
 - Define consistent **routing and navigation patterns**.
 - Establish a reusable **data-access and caching layer** with Apollo Client.
 - Demonstrate **CRUD flows** (create, edit, delete) for the Books feature.
-- Use **typed validation** with `react-hook-form` + `zod`.
 - Apply a **modern UI library (Mantine)** that can evolve into a design system.
 - Provide **unit/integration tests** to set expectations for future contributors.
 
@@ -69,3 +68,32 @@ Example:
 import BreadcrumbsBar from '@components/BreadcrumbsBar';
 import { BookDetail } from '@features/books';
 ```
+
+## Project structure
+
+This repository follows a feature-first layout with a small `app` area for
+application wiring and a `shared` area for UI primitives and libraries.
+
+Top-level folders you’ll use most:
+
+- `src/app/` — App composition and routing (providers, ThemeProvider, AppRoutes, Layout).
+- `src/features/<feature>/` — Feature-local code (pages, components, hooks, api). Example: `src/features/books/`.
+- `src/shared/` — Shared utilities and UI primitives used across features. We keep shared UI under `src/shared/ui/components`.
+- `src/assets/` — Static images and svg assets.
+- `src/theme/` — Design tokens and theme utilities.
+
+Alias recap (matches tsconfig + vite):
+
+- `@components/*` → `src/shared/ui/components/*`
+- `@features/*` → `src/features/*`
+- `@assets/*` → `src/assets/*`
+
+If you reorganize files, prefer updating your import aliases or the feature barrel to minimize changes across the codebase.
+
+## TODO
+
+Small follow-ups to finalize the recent refactors and developer docs:
+
+- [ ] Add a11y linting for tests (configure eslint-plugin-jsx-a11y for test environments)
+- [ ] Add CONTRIBUTING.md / contributors guidelines
+- [ ] Build out mass-delete operations — see routing and batch API design
