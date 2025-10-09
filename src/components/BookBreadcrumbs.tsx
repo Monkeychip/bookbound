@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
+import { BOOK_TITLE_QUERY } from '@features/books/api/queries';
 import { Breadcrumbs, Anchor, Text } from '@mantine/core';
 import { Link as RouterLink, useLocation, useParams } from 'react-router-dom';
 
@@ -29,15 +30,6 @@ import { Link as RouterLink, useLocation, useParams } from 'react-router-dom';
  *
  * ---------------------------------------------------------------------------
  */
-
-const BOOK_TITLE_QUERY = gql`
-  query BookTitle($id: ID!) {
-    book(id: $id) {
-      id
-      title
-    }
-  }
-`;
 
 export function BookBreadcrumbs() {
   const { bookId } = useParams<{ bookId?: string }>();

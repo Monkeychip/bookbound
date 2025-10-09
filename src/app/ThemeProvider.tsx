@@ -1,10 +1,12 @@
 import { MantineProvider, createTheme } from '@mantine/core';
 import { ReactNode } from 'react';
 
-// -----------------------------------------------------------------------------
-// Centralizes color scheme, fonts, radius, and spacing tokens.
-// This ensures a consistent look & feel across all feature areas.
-// -----------------------------------------------------------------------------
+/**
+ * ThemeProvider
+ *
+ * Centralizes color scheme, fonts, radius, and spacing tokens. This ensures
+ * a consistent look & feel across all feature areas.
+ */
 
 const theme = createTheme({
   fontFamily: 'Inter, system-ui, sans-serif',

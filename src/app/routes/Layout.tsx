@@ -3,9 +3,12 @@ import { BookBreadcrumbs } from '../../components/BookBreadcrumbs';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import logo from '@/assets/next-chapter-mark.svg';
 
-// -----------------------------------------------------------------------------
-// Shared layout for all routes
-// -----------------------------------------------------------------------------
+/**
+ * Layout
+ *
+ * Shared layout for all routes. Provides header navigation, skip-link, and a
+ * content container for route rendering.
+ */
 
 export function Layout() {
   const { pathname } = useLocation();

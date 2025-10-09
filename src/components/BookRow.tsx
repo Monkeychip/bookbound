@@ -2,7 +2,21 @@ import { Anchor, Group, Paper, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { RowMenu } from './RowMenu';
 import { useState } from 'react';
-// TODO documentation
+
+/**
+ * BookRow
+ *
+ * Presentational row used inside the books list. Handles keyboard access to
+ * opening details and surfaces a contextual `RowMenu` for per-item actions.
+ * Keep this component free of data fetching; it accepts callbacks for actions.
+ *
+ * @example
+ * <BookRow
+ *   book={{ id: 12, title: 'The Silent Pine', author: 'A. Author', rating: 4.5 }}
+ *   onDetails={(id) => navigate(`/books/${id}`)}
+ *   onDelete={(id) => deleteBook(id)}
+ * />
+ */
 export type Book = { id: number; title: string; author: string; rating: number };
 
 type BookRowProps = {

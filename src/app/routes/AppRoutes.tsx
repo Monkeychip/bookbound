@@ -4,11 +4,12 @@ import BooksList from '@components/BooksList';
 import { AboutPage } from './AboutPage';
 import { Layout } from './Layout';
 
-// -----------------------------------------------------------------------------
-// AppRoutes
-//
-// Centralized route definitions for Next Chapter.
-//
+/**
+ * AppRoutes
+ *
+ * Top-level route configuration for the application.
+ * Route planner comments remain below for development notes.
+ */
 // Planned CRUD route map:
 //
 //   • `/books`
@@ -41,7 +42,6 @@ import { Layout } from './Layout';
 //   – `/books` handles all list-level delete operations (bulk + global).
 //   – `/books/:bookId/delete` will handle single deletes with modal.
 //   – Route hierarchy designed for clarity, undo safety, and easy CRUD expansion.
-// -----------------------------------------------------------------------------
 
 export function AppRoutes() {
   return (

@@ -3,6 +3,24 @@ import { IconArrowRight } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import React from 'react';
 
+/**
+ * ListToolbar
+ *
+ * Small toolbar used above lists to provide search, sort, and create actions.
+ * Keeps list-related controls in one place so the list component focuses on
+ * data fetching and rendering.
+ *
+ * @example
+ * <ListToolbar
+ *   search={search}
+ *   onSearchChange={setSearch}
+ *   sortField={sortField}
+ *   onSortFieldChange={setSortField}
+ *   sortOrder={sortOrder}
+ *   onSortOrderChange={setSortOrder}
+ * />
+ */
+
 type SortField = 'RATING' | 'TITLE';
 type SortOrder = 'ASC' | 'DESC';
 

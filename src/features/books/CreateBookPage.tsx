@@ -1,31 +1,27 @@
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
+import { CREATE_BOOK } from './api/mutations';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Title, Text } from '@mantine/core';
 import { BookForm, BookFormValues } from './BookForm';
 
-// -----------------------------------------------------------------------------
-// CreateBookPage
-//
-// Uses the shared <BookForm /> to create a new book, then navigates to the
-// new book’s detail page (/books/:id) on success.
-// -----------------------------------------------------------------------------
+/**
+ * CreateBookPage
+ *
+ * Uses the shared <BookForm /> to create a new book, then navigates to the
+ * new book's detail page (/books/:id) on success.
+ *
+ * Responsibilities:
+ * - Render BookForm with empty initial values
+ * - Call CREATE_BOOK mutation and navigate to the new detail page
+ *
+ * @example
+ * <Route path="/books/new" element={<CreateBookPage />} />
+ */
 
 type Book = { id: number; title: string; author: string; rating: number; description: string };
 
 type CreateBookData = { createBook: Book };
 type CreateBookVars = { input: BookFormValues };
-
-const CREATE_BOOK = gql`
-  mutation CreateBook($input: BookCreateInput!) {
-    createBook(input: $input) {
-      id
-      title
-      author
-      rating
-      description
-    }
-  }
-`;
 
 export function CreateBookPage() {
   const navigate = useNavigate();

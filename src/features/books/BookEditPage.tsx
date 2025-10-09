@@ -1,44 +1,31 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery } from '@apollo/client';
+import { BOOK_QUERY } from './api/queries';
+import { UPDATE_BOOK } from './api/mutations';
+import { BookCore } from './api/fragments';
 import { Button, Group, Stack, Text, Title } from '@mantine/core';
 import { BookForm, BookFormValues } from './BookForm';
 import { Link as RouterLink } from 'react-router-dom';
 import EmptyState from '../../components/EmptyState';
 
-// -----------------------------------------------------------------------------
-// BookEditPage
-//
-// Loads a book, pre-fills <BookForm />, and updates via mutation.
-// Uses optimistic UI + cache write for instant feedback.
-// -----------------------------------------------------------------------------
+/**
+ * BookEditPage
+ *
+ * Loads a book, pre-fills <BookForm />, and updates via mutation. Uses
+ * optimistic UI + cache write for instant feedback.
+ *
+ * Responsibilities:
+ * - Fetch the book by id
+ * - Provide initial values to BookForm
+ * - Update cache on mutation so detail and list views reflect changes
+ *
+ * @example
+ * <Route path="/books/:bookId/edit" element={<BookEditPage />} />
+ */
 
 type Book = { id: number; title: string; author: string; rating: number; description: string };
 type BookData = { book: Book | null };
 type BookVars = { id: string };
-
-const BOOK_QUERY = gql`
-  query Book($id: ID!) {
-    book(id: $id) {
-      id
-      title
-      author
-      rating
-      description
-    }
-  }
-`;
-
-const UPDATE_BOOK = gql`
-  mutation UpdateBook($input: BookUpdateInput!) {
-    updateBook(input: $input) {
-      id
-      title
-      author
-      rating
-      description
-    }
-  }
-`;
 
 export function BookEditPage() {
   const { bookId } = useParams<{ bookId: string }>();
@@ -69,12 +56,12 @@ export function BookEditPage() {
         const LIST_QUERY = gql`
           query Books($limit: Int!, $skip: Int, $search: String) {
             books(limit: $limit, skip: $skip, search: $search) {
-              id
-              title
-              author
-              rating
+              items {
+                ...BookCore
+              }
             }
           }
+          ${BookCore}
         `;
         const vars = { limit: 10, skip: 0, search: undefined as string | undefined };
         const existing = cache.readQuery<{ books: Book[] }>({ query: LIST_QUERY, variables: vars });

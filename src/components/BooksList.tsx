@@ -1,15 +1,25 @@
 import { Button, Group, Pagination, Stack, Text } from '@mantine/core';
 import EmptyState from './EmptyState';
 import { useDebouncedValue } from '@mantine/hooks';
-import { gql, useMutation, useQuery, NetworkStatus } from '@apollo/client';
+import { useMutation, useQuery, NetworkStatus } from '@apollo/client';
+import { BOOKS_QUERY } from '@features/books/api/queries';
+import { DELETE_BOOK } from '@features/books/api/mutations';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BookRow from './BookRow';
 import ListToolbar from './ListToolbar';
 
-// -----------------------------------------------------------------------------
-// BooksList — list + search + sort + pagination
-// -----------------------------------------------------------------------------
+/**
+ * BooksList
+ *
+ * List view with search, sort and pagination. Uses `BOOKS_QUERY` to fetch
+ * paginated results and renders `BookRow` for each item. The component keeps
+ * data concerns (fetching, pagination, delete) at the list level and leaves
+ * presentation to `BookRow`.
+ *
+ * @example
+ * <BooksList />
+ */
 
 type Book = { id: number; title: string; author: string; rating: number };
 
@@ -33,28 +43,6 @@ type DeleteBookData = { deleteBook: boolean };
 type DeleteBookVars = { id: string | number };
 
 const PAGE_SIZE = 10;
-
-const BOOKS_QUERY = gql`
-  query Books($limit: Int!, $skip: Int, $search: String, $sort: BooksSort) {
-    books(limit: $limit, skip: $skip, search: $search, sort: $sort) {
-      items {
-        id
-        title
-        author
-        rating
-      }
-      total
-      skip
-      limit
-    }
-  }
-`;
-
-const DELETE_BOOK = gql`
-  mutation DeleteBook($id: ID!) {
-    deleteBook(id: $id)
-  }
-`;
 
 export function BooksList() {
   const [search, setSearch] = useState('');

@@ -1,22 +1,16 @@
-// -----------------------------------------------------------------------------
-// Defines GraphQL schema and resolvers.
-//
-// This module translates between the public GraphQL API (Books, Queries,
-// Mutations) and the external DummyJSON REST API.
-//
-// • The `typeDefs` string defines the GraphQL contract exposed to clients.
-// • The `resolvers` object defines how each query or mutation fetches or mutates data.
-// • DummyJSON's `/products` endpoints are used as a stand-in for the future API.
-//
-// Note: mapping "products" → "books" is knowingly a bit of a stretch.
-// Some entries (e.g., “Powder Canister”) resemble plausible book-like titles,
-// while others (“Mascara”, “Moisturizer”) do not. The goal here is to
-// demonstrate realistic data flow and structure, and have a little fun.
-//
-// This pattern allows developers to query "Books" via GraphQL, while
-// the backend logic can be swapped for a real database later without changing
-// the UI data-access layer.
-// -----------------------------------------------------------------------------
+/**
+ * GraphQL schema and resolvers
+ *
+ * This module translates between the public GraphQL API (Books, Queries,
+ * Mutations) and the external DummyJSON REST API. The `typeDefs` define the
+ * schema, and `resolvers` map operations to REST calls. DummyJSON's
+ * `/products` endpoints are used as a stand-in for demo data.
+ *
+ * Note: mapping "products" → "books" is knowingly a bit of a stretch.
+ * Some entries (e.g., “Powder Canister”) resemble plausible book-like titles,
+ * while others (“Mascara”, “Moisturizer”) do not. The goal here is to
+ * demonstrate realistic data flow and structure, and have a little fun.
+ */
 
 const DUMMY_BASE = 'https://dummyjson.com';
 

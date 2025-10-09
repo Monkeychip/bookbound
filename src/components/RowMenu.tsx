@@ -1,7 +1,20 @@
 import { ActionIcon, Menu } from '@mantine/core';
 import { IconDots } from '@tabler/icons-react';
 
-// TODO: add documentation
+/**
+ * RowMenu
+ *
+ * Small contextual menu used by list rows. Exposes actions like Details and
+ * Delete for an individual item. The trigger is keyboard-focusable and
+ * includes ARIA attributes to improve accessibility.
+ *
+ * @example
+ * <RowMenu
+ *   label="The Silent Pine"
+ *   onDetails={() => navigate('/books/12')}
+ *   onDelete={() => deleteBook(12)}
+ * />
+ */
 
 type RowMenuProps = {
   onDetails: () => void;

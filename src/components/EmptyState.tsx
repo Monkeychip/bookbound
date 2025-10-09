@@ -2,6 +2,22 @@ import React from 'react';
 import { Center, Stack, Title, Text, Group, ThemeIcon } from '@mantine/core';
 import { IconBookOff } from '@tabler/icons-react';
 
+/**
+ * EmptyState
+ *
+ * Reusable presentation component to show when a list or page has no data.
+ * Props allow overriding the title, description, icon, and an optional action.
+ * This component is intentionally UI-only and accepts React nodes for actions
+ * so callers can provide buttons/links as appropriate.
+ *
+ * @example
+ * <EmptyState
+ *   title="No books"
+ *   description="Add a book to get started"
+ *   action={<Button component={Link} to="/books/new">Create</Button>}
+ * />
+ */
+
 export interface EmptyStateProps {
   title?: string;
   description?: string;

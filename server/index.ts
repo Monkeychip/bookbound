@@ -2,21 +2,12 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { typeDefs, resolvers } from './schema';
 
-// -----------------------------------------------------------------------------
-// Entry point for GraphQL server.
-//
-// This file launches an Apollo Server instance using the built-in standalone
-// HTTP server helper. It imports schema + resolvers from
-// `schema.ts`, starts the server on port 4000, and logs the running URL.
-//
-// Apollo Server acts as the backend: it receives GraphQL queries
-// from the frontend, executes the corresponding resolvers, and returns structured
-// JSON responses. This layer abstracts away the underlying data source (DummyJSON
-// for now) so the frontend can work with a consistent, typed API.
-//
-// If Next Chapter ever needs authentication middleware, custom
-// routes, or rate limiting, we can easily migrate to Express or Fastify.
-// -----------------------------------------------------------------------------
+/**
+ * GraphQL server entry point
+ *
+ * Launches a standalone Apollo Server using schema + resolvers from `schema.ts`.
+ * Intended for local development; can be adapted to a production server later.
+ */
 
 async function main() {
   const server = new ApolloServer({ typeDefs, resolvers });
