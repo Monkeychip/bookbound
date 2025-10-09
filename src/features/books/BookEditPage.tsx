@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { Button, Group, Stack, Text, Title } from '@mantine/core';
 import { BookForm, BookFormValues } from './BookForm';
@@ -104,10 +104,7 @@ export function BookEditPage() {
   if (!data?.book) {
     return (
       <Stack>
-        <Text c="dimmed">Book not found.</Text>
-        <Button component={RouterLink} to="/books" variant="light">
-          Back to Book List
-        </Button>
+        <Text>Book not found.</Text>
       </Stack>
     );
   }
@@ -135,9 +132,6 @@ export function BookEditPage() {
     <Stack>
       <Group justify="space-between" align="center">
         <Title order={2}>Edit Book</Title>
-        <Button variant="subtle" component={RouterLink} to={`/books/${b.id}`}>
-          Cancel
-        </Button>
       </Group>
 
       <BookForm

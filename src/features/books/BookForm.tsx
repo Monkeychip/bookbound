@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Group, NumberInput, Stack, TextInput, Textarea } from '@mantine/core';
+import { Button, Group, Input, Rating, Stack, Text, Textarea, TextInput } from '@mantine/core';
 
 // -----------------------------------------------------------------------------
 // BookForm
@@ -36,17 +36,9 @@ export function BookForm({
   const [title, setTitle] = useState(initial?.title ?? '');
   const [author, setAuthor] = useState(initial?.author ?? '');
   const [description, setDescription] = useState(initial?.description ?? '');
-  const [rating, setRating] = useState<number | ''>(initial?.rating ?? 0);
+  const [rating, setRating] = useState<number>(initial?.rating ?? 0);
 
   const canSubmit = title.trim().length > 0 && author.trim().length > 0 && !disabled;
-
-  const handleRatingChange = (v: string | number) => {
-    if (v === '' || typeof v === 'number') setRating(v);
-    else {
-      const n = Number(v);
-      setRating(Number.isNaN(n) ? '' : n);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,26 +52,32 @@ export function BookForm({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Stack gap="sm">
+    <form onSubmit={handleSubmit} aria-describedby="form-help">
+      <Stack gap="md" px="lg" py="md">
         <TextInput
+          withAsterisk
+          required
+          aria-required="true"
           label="Title"
           placeholder="The Silent Pine"
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
-          required
           disabled={disabled}
           styles={{ input: { background: 'white', color: '#0c3736' } }}
         />
+
         <TextInput
+          withAsterisk
+          required
+          aria-required="true"
           label="Author"
           placeholder="A. Garbarino"
           value={author}
           onChange={(e) => setAuthor(e.currentTarget.value)}
-          required
           disabled={disabled}
           styles={{ input: { background: 'white', color: '#0c3736' } }}
         />
+
         <Textarea
           label="Description"
           placeholder="Short blurb…"
@@ -90,18 +88,32 @@ export function BookForm({
           maxRows={6}
           disabled={disabled}
         />
-        <NumberInput
+
+        {/* Rating (0–5, 0.1 steps) */}
+        <Input.Wrapper
+          id="rating"
           label="Rating"
-          placeholder="0–5"
-          min={0}
-          max={5}
-          step={0.1}
-          value={rating}
-          onChange={handleRatingChange}
-          clampBehavior="strict"
-          maw={160}
-          disabled={disabled}
-        />
+          description="0 to 5 (use half/decimal stars)"
+          aria-describedby="rating-desc"
+        >
+          <Stack gap={4}>
+            <Rating
+              name="rating"
+              value={typeof rating === 'number' ? rating : 0}
+              onChange={setRating}
+              count={5}
+              fractions={10} // 0.1 precision
+              readOnly={disabled}
+              color="orangeAccent"
+              size="lg"
+              getSymbolLabel={(value) => `${value} star${value === 1 ? '' : 's'}`}
+              aria-label="Rating from 0 to 5 stars"
+            />
+            <Text id="rating-desc" c="cream.3" size="xs">
+              Use arrow keys for keyboard control. Press Left/Right to adjust by 0.1.
+            </Text>
+          </Stack>
+        </Input.Wrapper>
 
         <Group justify="flex-end" mt="sm">
           {onCancel && (
@@ -109,7 +121,7 @@ export function BookForm({
               Cancel
             </Button>
           )}
-          <Button type="submit" loading={loading} disabled={!canSubmit}>
+          <Button type="submit" loading={loading} disabled={!canSubmit} aria-busy={loading}>
             {submitLabel}
           </Button>
         </Group>

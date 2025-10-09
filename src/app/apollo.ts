@@ -27,7 +27,7 @@ export const apolloClient = new ApolloClient({
       Query: {
         fields: {
           books: {
-            keyArgs: ['search'],
+            keyArgs: ['search', ['sort', 'field'], ['sort', 'order']],
             merge(_existing, incoming) {
               return incoming;
             },

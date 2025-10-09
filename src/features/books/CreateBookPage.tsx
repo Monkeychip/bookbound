@@ -46,7 +46,7 @@ export function CreateBookPage() {
   return (
     <Stack>
       <Title order={2}>Create Book</Title>
-      <Text c="dimmed" fz="sm">
+      <Text id="form-help" c="cream.2" size="md" lh={1.6}>
         Fill the form and click Create to add a new book.
       </Text>
       <BookForm

@@ -8,5 +8,5 @@ import { Text } from '@mantine/core';
 // -----------------------------------------------------------------------------
 
 export function AboutPage() {
-  return <Text c="dimmed">Next Chapter — TODO</Text>;
+  return <Text>Next Chapter — TODO</Text>;
 }

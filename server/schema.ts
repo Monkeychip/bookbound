@@ -1,12 +1,12 @@
 // -----------------------------------------------------------------------------
-// Defines Next Chapter's GraphQL schema and resolvers.
+// Defines GraphQL schema and resolvers.
 //
 // This module translates between the public GraphQL API (Books, Queries,
 // Mutations) and the external DummyJSON REST API.
 //
 // • The `typeDefs` string defines the GraphQL contract exposed to clients.
 // • The `resolvers` object defines how each query or mutation fetches or mutates data.
-// • DummyJSON's `/products` endpoints are used as a stand-in for Next Chapter's future API.
+// • DummyJSON's `/products` endpoints are used as a stand-in for the future API.
 //
 // Note: mapping "products" → "books" is knowingly a bit of a stretch.
 // Some entries (e.g., “Powder Canister”) resemble plausible book-like titles,
@@ -18,8 +18,6 @@
 // the UI data-access layer.
 // -----------------------------------------------------------------------------
 
-// DummyJSON API used to mock book data
-// https://dummyjson.com/docs/products
 const DUMMY_BASE = 'https://dummyjson.com';
 
 type DummyProduct = {
@@ -68,12 +66,6 @@ function toBook(p: DummyProduct): Book {
   };
 }
 
-function isProductListResponse(x: unknown): x is ProductListResponse {
-  return (
-    typeof x === 'object' && x !== null && Array.isArray((x as { products?: unknown }).products)
-  );
-}
-
 function isDummyProduct(x: unknown): x is DummyProduct {
   return (
     typeof x === 'object' &&
@@ -89,6 +81,21 @@ function isDummyProduct(x: unknown): x is DummyProduct {
 // GraphQL schema definition: CRUD operations for "Book" type
 // (maps to DummyJSON /products endpoints)
 export const typeDefs = `
+  enum SortOrder {
+    ASC
+    DESC
+  }
+
+  enum BookSortField {
+    RATING
+    TITLE
+  }
+
+  input BooksSort {
+    field: BookSortField! = RATING
+    order: SortOrder! = DESC
+  }
+
   type Book {
     id: ID!
     title: String!
@@ -112,8 +119,20 @@ export const typeDefs = `
     rating: Float
   }
 
+  type BooksPage {
+    items: [Book!]!
+    total: Int!
+    skip: Int!
+    limit: Int!
+  }
+
   type Query {
-    books(search: String, limit: Int = 20, skip: Int = 0): [Book!]!
+    books(
+      search: String
+      limit: Int = 20
+      skip: Int = 0
+      sort: BooksSort
+    ): BooksPage!
     book(id: ID!): Book
   }
 
@@ -123,27 +142,70 @@ export const typeDefs = `
     deleteBook(id: ID!): Boolean!
   }
 `;
+
 // GraphQL resolvers: translates queries/mutations to REST calls
 export const resolvers = {
   Query: {
     // Fetch paginated list of books (maps to DummyJSON /products or /products/search)
     books: async (
       _: unknown,
-      { search, limit = 20, skip = 0 }: { search?: string; limit?: number; skip?: number },
+      args: {
+        search?: string;
+        limit?: number;
+        skip?: number;
+        sort?: { field?: 'RATING' | 'TITLE'; order?: 'ASC' | 'DESC' };
+      },
     ) => {
-      const url = search
-        ? `${DUMMY_BASE}/products/search?q=${encodeURIComponent(search)}&limit=${limit}&skip=${skip}`
-        : `${DUMMY_BASE}/products?limit=${limit}&skip=${skip}`;
+      const limit = Number.isFinite(args.limit) ? Math.max(0, args.limit!) : 20;
+      const skip = Number.isFinite(args.skip) ? Math.max(0, args.skip!) : 0;
+      const field = args.sort?.field ?? 'RATING';
+      const order = args.sort?.order ?? 'DESC';
 
-      const res = await fetch(url);
+      // We’ll request a bigger page from DummyJSON so client-side sorting is accurate.
+      // DummyJSON caps at 100, so this is safe for demo purposes.
+      const FETCH_LIMIT = 100;
+
+      const base = args.search
+        ? `${DUMMY_BASE}/products/search?q=${encodeURIComponent(args.search)}&limit=${FETCH_LIMIT}&skip=0`
+        : `${DUMMY_BASE}/products?limit=${FETCH_LIMIT}&skip=0`;
+
+      const res = await fetch(base);
       if (!res.ok) throw new Error(`DummyJSON error: ${res.status}`);
+      const data = await res.json();
 
-      const data: unknown = await res.json();
-      if (!isProductListResponse(data)) {
-        throw new Error('Unexpected response shape from DummyJSON');
-      }
+      // Defensive: make sure we have an array
+      const rawList: unknown[] = Array.isArray((data as ProductListResponse)?.products)
+        ? (data as ProductListResponse).products
+        : [];
+      const total: number =
+        typeof (data as ProductListResponse).total === 'number'
+          ? (data as ProductListResponse).total
+          : rawList.length;
 
-      return data.products.map(toBook);
+      // Map to Book[]
+      const allBooks = rawList.filter(isDummyProduct).map(toBook);
+
+      // Sort
+      allBooks.sort((a, b) => {
+        let cmp = 0;
+        if (field === 'TITLE') {
+          cmp = a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+        } else {
+          // RATING
+          cmp = a.rating === b.rating ? 0 : a.rating < b.rating ? -1 : 1;
+        }
+        return order === 'ASC' ? cmp : -cmp;
+      });
+
+      // Paginate
+      const items = allBooks.slice(skip, skip + limit);
+
+      return {
+        items,
+        total,
+        skip,
+        limit,
+      };
     },
     // Fetch a single book by ID
     book: async (_: unknown, { id }: { id: string }) => {

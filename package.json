@@ -30,6 +30,7 @@
     "@mantine/core": "^8.3.3",
     "@mantine/hooks": "^8.3.3",
     "@mantine/notifications": "^8.3.3",
+    "@tabler/icons-react": "^3.35.0",
     "graphql": "^16.11.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.3",

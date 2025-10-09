@@ -1,7 +1,6 @@
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
-import { Link } from 'react-router-dom';
-import { Anchor, Breadcrumbs, Button, Group, Stack, Text, Title } from '@mantine/core';
+import { Button, Group, Rating, Stack, Text, Title } from '@mantine/core';
 
 // -----------------------------------------------------------------------------
 // BookDetail
@@ -49,52 +48,31 @@ export function BookDetail() {
   if (!data?.book) {
     return (
       <div style={{ padding: 24 }}>
-        <Text size="lg" fw={500} mb="sm">
+        <Text c="cream.2" size="lg" fw={500} mb="sm">
           Book not found
         </Text>
-        <Text mb="md" c="dimmed">
+        <Text mb="md">
           It is possible this item was not saved on the backend. Double-check the list and try
           again.
         </Text>
-        <Group>
-          <Button component={Link} to="/books" variant="light">
-            Back to Book List
-          </Button>
-        </Group>
       </div>
     );
   }
 
   const b = data.book;
-  const breadcrumbItems = [{ label: 'Book List', to: '/books' }, { label: b.title }];
 
   return (
     <Stack gap="xs">
-      <Breadcrumbs>
-        {breadcrumbItems.map((item, i) =>
-          item.to ? (
-            <Anchor key={i} component={RouterLink} to={item.to}>
-              {item.label}
-            </Anchor>
-          ) : (
-            <Text key={i}>{item.label}</Text>
-          ),
-        )}
-      </Breadcrumbs>
-
       <Group justify="space-between" align="flex-start">
         <Title order={2}>{b.title}</Title>
         <Group>
-          <Button component={RouterLink} to="/books" variant="subtle">
-            Back
-          </Button>
           <Button component={RouterLink} to={`/books/${b.id}/edit`} variant="light">
             Edit
           </Button>
         </Group>
       </Group>
       <Text fw={500}>Author: {b.author}</Text>
-      <Text>Rating: {b.rating}</Text>
+      <Rating value={b.rating} readOnly />
       <Text>{b.description || 'No description.'}</Text>
     </Stack>
   );
