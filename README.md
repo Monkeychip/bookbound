@@ -28,7 +28,9 @@ The result will serve as the blueprint for Next Chapter’s new frontend archite
 ## Quick Start
 
 1. npm i
-2. npm run dev → http://localhost:5173
+2. Run the server: `npm run dev:server`
+   _Allows you to pretest query functions_
+3. Run the client: `npm run dev` → http://localhost:5173
 
 ### Use of GenAI
 
@@ -50,3 +52,20 @@ To provide a seamless UX and to demonstrate scalable caching patterns, the app:
   sufficient and we avoid a failing network request.
 - If the page is hard-refreshed, the in-memory cache is empty; the backend will
   not find the non-persisted item.
+
+<!-- appended by automated edit: Import aliases -->
+
+## Import aliases
+
+The project defines path aliases to keep imports concise and consistent. Prefer using these when importing shared modules:
+
+- `@components/*` — shared UI components (buttons, lists, rows, empty states, etc.)
+- `@features/*` — feature-level pages and logic (books, authors, etc.)
+- `@assets/*` — static assets
+
+Example:
+
+```ts
+import BooksList from '@components/BooksList';
+import { BookDetail } from '@features/books';
+```

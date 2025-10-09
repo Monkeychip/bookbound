@@ -2,6 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import { Button, Group, Stack, Text, Title } from '@mantine/core';
 import { BookForm, BookFormValues } from './BookForm';
+import { Link as RouterLink } from 'react-router-dom';
+import EmptyState from '../../components/EmptyState';
 
 // -----------------------------------------------------------------------------
 // BookEditPage
@@ -103,9 +105,15 @@ export function BookEditPage() {
     );
   if (!data?.book) {
     return (
-      <Stack>
-        <Text>Book not found.</Text>
-      </Stack>
+      <EmptyState
+        title="Can't edit"
+        description="That book wasn't found. It may have been removed or never saved."
+        action={
+          <Button component={RouterLink} to="/books">
+            Back to list
+          </Button>
+        }
+      />
     );
   }
 

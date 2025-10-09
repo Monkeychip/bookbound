@@ -1,6 +1,7 @@
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
 import { Button, Group, Rating, Stack, Text, Title } from '@mantine/core';
+import EmptyState from '../../components/EmptyState';
 
 // -----------------------------------------------------------------------------
 // BookDetail
@@ -47,15 +48,20 @@ export function BookDetail() {
   // This provides a gentle UX fallback with a link back to the book list.
   if (!data?.book) {
     return (
-      <div style={{ padding: 24 }}>
-        <Text c="cream.2" size="lg" fw={500} mb="sm">
-          Book not found
-        </Text>
-        <Text mb="md">
-          It is possible this item was not saved on the backend. Double-check the list and try
-          again.
-        </Text>
-      </div>
+      <EmptyState
+        title="Book not found"
+        description="This book doesn't appear to exist (it may not have been saved). You can browse the list or create a new book."
+        action={
+          <div>
+            <Button component={RouterLink} to="/books" variant="light">
+              Back to list
+            </Button>
+            <Button component={RouterLink} to="/books/new" ml="sm">
+              Create book
+            </Button>
+          </div>
+        }
+      />
     );
   }
 

@@ -1,5 +1,5 @@
 import { Anchor, AppShell, Container, Group, Image, Title } from '@mantine/core';
-import { BookBreadcrumbs } from '../components/BookBreadcrumbs';
+import { BookBreadcrumbs } from '../../components/BookBreadcrumbs';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import logo from '@/assets/next-chapter-mark.svg';
 
@@ -91,7 +91,6 @@ export function Layout() {
 
       <AppShell.Main id="main" bg="transparent">
         <Container size="lg" py="lg">
-          {/* TODO Do not show breadcrumbs on list or about page */}
           <BookBreadcrumbs />
           <Outlet />
         </Container>

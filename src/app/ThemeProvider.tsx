@@ -52,6 +52,14 @@ const theme = createTheme({
   components: {
     ActionIcon: {
       defaultProps: { variant: 'outline', color: 'orangeAccent', radius: 'md' },
+      styles: {
+        root: {
+          '&:focusVisible': {
+            outline: '3px solid rgba(63,140,137,0.18)',
+            borderRadius: 6,
+          },
+        },
+      },
     },
     Breadcrumbs: {
       styles: (theme: { spacing: { lg: string }; colors: { cream: number[] } }) => ({

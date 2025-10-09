@@ -1,21 +1,11 @@
-import {
-  ActionIcon,
-  Anchor,
-  Button,
-  Group,
-  Menu,
-  Pagination,
-  Paper,
-  SegmentedControl,
-  Stack,
-  Text,
-  TextInput,
-} from '@mantine/core';
-import { IconDots, IconArrowRight } from '@tabler/icons-react';
+import { Button, Group, Pagination, Stack, Text } from '@mantine/core';
+import EmptyState from './EmptyState';
 import { useDebouncedValue } from '@mantine/hooks';
 import { gql, useMutation, useQuery, NetworkStatus } from '@apollo/client';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import BookRow from './BookRow';
+import ListToolbar from './ListToolbar';
 
 // -----------------------------------------------------------------------------
 // BooksList — list + search + sort + pagination
@@ -69,6 +59,7 @@ const DELETE_BOOK = gql`
 export function BooksList() {
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 300);
+  const navigate = useNavigate();
 
   const [page, setPage] = useState(1); // default to page 1;
   const [sortField, setSortField] = useState<'RATING' | 'TITLE'>('RATING');
@@ -156,51 +147,23 @@ export function BooksList() {
 
   return (
     <div style={{ padding: 16 }}>
-      <Group justify="space-between" align="center" mb="sm" wrap="wrap">
-        <TextInput
-          placeholder="Search books…"
-          value={search}
-          onChange={(e) => {
-            setPage(1);
-            setSearch(e.currentTarget.value);
-          }}
-          styles={{ input: { background: 'white', color: '#0c3736' } }}
-        />
-
-        <Group gap="sm" wrap="wrap">
-          <SegmentedControl
-            value={sortField}
-            onChange={(v) => {
-              setPage(1);
-              setSortField(v as 'RATING' | 'TITLE');
-            }}
-            data={[
-              { label: 'Rating', value: 'RATING' },
-              { label: 'Title', value: 'TITLE' },
-            ]}
-          />
-          <SegmentedControl
-            value={sortOrder}
-            onChange={(v) => {
-              setPage(1);
-              setSortOrder(v as 'ASC' | 'DESC');
-            }}
-            data={[
-              { label: '↓', value: 'DESC' },
-              { label: '↑', value: 'ASC' },
-            ]}
-          />
-
-          <Button
-            component={Link}
-            to="/books/new"
-            variant="filled"
-            rightSection={<IconArrowRight size={14} />}
-          >
-            Create Book
-          </Button>
-        </Group>
-      </Group>
+      <ListToolbar
+        search={search}
+        onSearchChange={(v) => {
+          setPage(1);
+          setSearch(v);
+        }}
+        sortField={sortField}
+        onSortFieldChange={(v) => {
+          setPage(1);
+          setSortField(v);
+        }}
+        sortOrder={sortOrder}
+        onSortOrderChange={(v) => {
+          setPage(1);
+          setSortOrder(v);
+        }}
+      />
 
       {isSearching && <Text c="cream.2">Searching…</Text>}
 
@@ -217,75 +180,37 @@ export function BooksList() {
       )}
 
       {!loading && !error && total === 0 && (
-        <Stack gap="xs" mt="sm">
-          <Text>No books found.</Text>
-          {debouncedSearch && (
-            <Button variant="subtle" onClick={() => setSearch('')}>
-              Clear search
-            </Button>
-          )}
-        </Stack>
+        <EmptyState
+          title={debouncedSearch ? 'No search results' : 'No books yet'}
+          description={
+            debouncedSearch
+              ? 'No books match your query. Try a different search or clear the query.'
+              : "You don't have any books yet. Create one to get started."
+          }
+          action={
+            <div>
+              {debouncedSearch ? (
+                <Button variant="subtle" onClick={() => setSearch('')}>
+                  Clear search
+                </Button>
+              ) : null}
+              <Button component={Link} to="/books/new" ml="sm">
+                Create book
+              </Button>
+            </div>
+          }
+        />
       )}
 
       <Stack gap="xs" mt="sm">
         {data?.books?.items?.map((b) => (
-          <Paper
+          <BookRow
             key={b.id}
-            withBorder
-            radius="md"
-            p="xs"
-            style={{
-              borderColor: 'var(--mantine-color-tealBrand-7)',
-              backgroundColor:
-                'color-mix(in oklab, var(--mantine-color-tealBrand-9) 92%, black 8%)',
-              transition: 'background-color 120ms ease',
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = 'var(--mantine-color-tealBrand-8)')
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                'color-mix(in oklab, var(--mantine-color-tealBrand-9) 92%, black 8%)')
-            }
-          >
-            <Group justify="space-between" align="center" wrap="nowrap">
-              <div>
-                <Anchor component={Link} to={`/books/${b.id}`} c="cream.0" fw={700}>
-                  {b.title}
-                </Anchor>
-                <Text c="cream.2" size="sm" ml="xs" span>
-                  — {b.author} ({b.rating})
-                </Text>
-              </div>
-
-              <Menu withinPortal position="bottom-end" shadow="md">
-                <Menu.Target>
-                  <ActionIcon
-                    variant="outline"
-                    color="orangeAccent"
-                    aria-label={`More actions for ${b.title}`}
-                    radius="md"
-                    size="sm"
-                  >
-                    <IconDots size={16} />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item component={Link} to={`/books/${b.id}`}>
-                    Details
-                  </Menu.Item>
-                  <Menu.Divider />
-                  <Menu.Item
-                    color="red"
-                    onClick={() => deleteBook({ variables: { id: b.id } })}
-                    disabled={deleting}
-                  >
-                    Delete
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            </Group>
-          </Paper>
+            book={b}
+            onDelete={(id) => deleteBook({ variables: { id } })}
+            onDetails={(id) => navigate(`/books/${id}`)}
+            disabled={deleting}
+          />
         ))}
       </Stack>
 
@@ -298,3 +223,5 @@ export function BooksList() {
     </div>
   );
 }
+
+export default BooksList;

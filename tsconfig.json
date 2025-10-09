@@ -10,7 +10,8 @@
     "paths": {
       "@/*": ["*"],
       "@features/*": ["features/*"],
-      "@assets/*": ["assets/*"]
+      "@assets/*": ["assets/*"],
+      "@components/*": ["components/*"]
     }
   },
   "include": ["src", "server", "vite.config.ts"]

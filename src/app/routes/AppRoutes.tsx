@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { BooksList, BookDetail, CreateBookPage, BookEditPage } from '@features/books';
+import { BookDetail, CreateBookPage, BookEditPage } from '@features/books';
+import BooksList from '@components/BooksList';
 import { AboutPage } from './AboutPage';
 import { Layout } from './Layout';
 

@@ -1,5 +1,5 @@
 import { Container } from '@mantine/core';
-import { AppRoutes } from './app/AppRoutes';
+import { AppRoutes } from './app/routes/AppRoutes';
 
 // -----------------------------------------------------------------------------
 // App Component
