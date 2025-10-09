@@ -1,12 +1,12 @@
 // -----------------------------------------------------------------------------
-// Defines Bookbound's GraphQL schema and resolvers.
+// Defines Next Chapter's GraphQL schema and resolvers.
 //
 // This module translates between the public GraphQL API (Books, Queries,
 // Mutations) and the external DummyJSON REST API.
 //
 // • The `typeDefs` string defines the GraphQL contract exposed to clients.
 // • The `resolvers` object defines how each query or mutation fetches or mutates data.
-// • DummyJSON's `/products` endpoints are used as a stand-in for Bookbound's future API.
+// • DummyJSON's `/products` endpoints are used as a stand-in for Next Chapter's future API.
 //
 // Note: mapping "products" → "books" is knowingly a bit of a stretch.
 // Some entries (e.g., “Powder Canister”) resemble plausible book-like titles,

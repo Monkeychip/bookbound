@@ -103,6 +103,7 @@ export function BooksList() {
         value={search}
         onChange={(e) => setSearch(e.currentTarget.value)}
         mb="sm"
+        styles={{ input: { background: 'white', color: '#0c3736' } }}
       />
       {isSearching && <p>Searching…</p>}
 
@@ -125,8 +126,20 @@ export function BooksList() {
             — {b.author} ({b.rating})
             <Button
               size="xs"
-              variant="light"
               ml="sm"
+              variant="outline"
+              color="orangeAccent"
+              styles={{
+                root: {
+                  borderColor: '#f87324',
+                  color: '#f87324',
+                  fontWeight: 600,
+                  '&:hover': {
+                    backgroundColor: '#f87324',
+                    color: '#fff7ea', // cream text
+                  },
+                },
+              }}
               loading={deleting}
               onClick={() => deleteBook({ variables: { id: b.id } })}
             >

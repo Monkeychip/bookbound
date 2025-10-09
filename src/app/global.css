@@ -1,0 +1,22 @@
+/* src/app/global.css */
+:root,
+body,
+#root {
+  height: 100%;
+}
+html,
+body {
+  margin: 0;
+} /* remove default margin */
+
+body {
+  background: var(--mantine-color-tealBrand-9);
+  color: var(--mantine-color-cream-1);
+}
+
+a {
+  color: var(--mantine-color-cream-0);
+}
+a:hover {
+  color: var(--mantine-color-orangeAccent-5);
+}

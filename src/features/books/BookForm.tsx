@@ -69,6 +69,7 @@ export function BookForm({
           onChange={(e) => setTitle(e.currentTarget.value)}
           required
           disabled={disabled}
+          styles={{ input: { background: 'white', color: '#0c3736' } }}
         />
         <TextInput
           label="Author"
@@ -77,6 +78,7 @@ export function BookForm({
           onChange={(e) => setAuthor(e.currentTarget.value)}
           required
           disabled={disabled}
+          styles={{ input: { background: 'white', color: '#0c3736' } }}
         />
         <Textarea
           label="Description"

@@ -6,7 +6,7 @@ import { Layout } from './Layout';
 // -----------------------------------------------------------------------------
 // AppRoutes
 //
-// Centralized route definitions for Bookbound.
+// Centralized route definitions for Next Chapter.
 //
 // Planned CRUD route map:
 //

@@ -13,7 +13,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   return (
     <Container size="sm" py="xl">
       <Title order={1} mb="md">
-        📚 Bookbound
+        📚 Next Chapter
       </Title>
       {children}
     </Container>

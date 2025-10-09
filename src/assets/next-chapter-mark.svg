@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Next Chapter mark">
+  <!-- Background is transparent so it works on dark teal site bg -->
+  <defs>
+    <style>
+      .cream { fill: #fff7ea; }
+      .orange { fill: #f87324; }
+      .teal-stroke { stroke: #fff7ea; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    </style>
+  </defs>
+  <!-- Open book mark -->
+  <g transform="translate(8,12)">
+    <!-- book pages outline (cream stroke) -->
+    <path class="teal-stroke" d="M8,28 C24,20 40,20 56,28 M56,28 C72,20 88,20 104,28 M8,28 L8,82
+                                  M104,28 L104,82
+                                  M8,82 C24,74 40,74 56,82
+                                  M56,82 C72,74 88,74 104,82"/>
+    <!-- page centers (spine dip) -->
+    <path class="teal-stroke" d="M56,28 L56,82"/>
+    <!-- subtle fold highlight (cream fill) -->
+    <path class="cream" opacity="0.15" d="M8,28 C24,20 40,20 56,28 L56,82 C40,74 24,74 8,82 Z"/>
+    <path class="cream" opacity="0.12" d="M104,28 C88,20 72,20 56,28 L56,82 C72,74 88,74 104,82 Z"/>
+  </g>
+  <!-- Accent stars (orange) -->
+  <g>
+    <path class="orange" d="M22 18 l4 6 7 2-7 2-4 6-4-6-7-2 7-2z" />
+    <path class="orange" d="M98 12 l3 5 5 1-5 2-3 5-3-5-5-2 5-1z" />
+  </g>
+</svg>

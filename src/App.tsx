@@ -5,7 +5,7 @@ import { AppRoutes } from './app/AppRoutes';
 // -----------------------------------------------------------------------------
 // App Component
 //
-// The root layout for the Bookbound frontend.
+// The root layout for the Next Chapter frontend.
 //
 // Includes a minimal navigation bar with route links (`Books`, `About`)
 // and a simple highlight for the active route.
@@ -22,7 +22,7 @@ export default function App() {
   return (
     <Container size="sm" py="xl">
       <Title order={1} mb="md">
-        Bookbound
+        Next Chapter
       </Title>
 
       {showNav && (

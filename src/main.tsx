@@ -10,6 +10,7 @@ import App from './App';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css'; // TODO: for notifications, remove if unused
+import './app/global.css';
 
 // -----------------------------------------------------------------------------
 // Entry point for the React application.

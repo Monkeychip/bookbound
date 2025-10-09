@@ -8,7 +8,9 @@
     "types": ["node"],
     "baseUrl": "src",
     "paths": {
-      "@features/*": ["features/*"]
+      "@/*": ["*"],
+      "@features/*": ["features/*"],
+      "@assets/*": ["assets/*"]
     }
   },
   "include": ["src", "server", "vite.config.ts"]
