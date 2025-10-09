@@ -1,6 +1,7 @@
 import { Button, Group, List, TextInput, Textarea, NumberInput, ThemeIcon } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { gql, useMutation, useQuery, NetworkStatus } from '@apollo/client';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 // -----------------------------------------------------------------------------
@@ -223,7 +224,10 @@ export function BooksList() {
       <List spacing="xs" withPadding>
         {data?.books?.map((b) => (
           <List.Item key={b.id} icon={<ThemeIcon size={10} radius="xl" />}>
-            <strong>{b.title}</strong> — {b.author} ({b.rating})
+            <strong>
+              <Link to={`/books/${b.id}`}>{b.title}</Link>
+            </strong>{' '}
+            — {b.author} ({b.rating})
             <Button
               size="xs"
               variant="light"

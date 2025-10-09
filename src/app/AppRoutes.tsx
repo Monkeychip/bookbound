@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { BooksList } from '../features/books/BooksList';
+import { BookDetail } from '../features/books/BookDetail';
 import { AboutPage } from './AboutPage';
 
 // -----------------------------------------------------------------------------
@@ -23,7 +24,7 @@ import { AboutPage } from './AboutPage';
 //
 //   • `/books/:bookId`
 //       🔍 READ book details (R in CRUD)
-//       TODO: Add layout, metadata, and edit/delete links.
+//       TODO: Add layout, metadata, and edit/delete links. Accessible from List view.
 //
 //   • `/books/:bookId/edit`
 //       🧩 UPDATE an existing book (U + D in CRUD)
@@ -48,6 +49,7 @@ export function AppRoutes() {
       <Route path="/" element={<Navigate to="/books" replace />} />
       <Route path="/books" element={<BooksList />} />
       <Route path="/about" element={<AboutPage />} />
+      <Route path="/books/:bookId" element={<BookDetail />} />
       <Route path="*" element={<Navigate to="/books" replace />} />
     </Routes>
   );
