@@ -1,0 +1,157 @@
+import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { gql, useMutation, useQuery } from '@apollo/client';
+import { Button, Group, Stack, Text, Title } from '@mantine/core';
+import { BookForm, BookFormValues } from './BookForm';
+
+// -----------------------------------------------------------------------------
+// BookEditPage
+//
+// Loads a book, pre-fills <BookForm />, and updates via mutation.
+// Uses optimistic UI + cache write for instant feedback.
+// -----------------------------------------------------------------------------
+
+type Book = { id: number; title: string; author: string; rating: number; description: string };
+type BookData = { book: Book | null };
+type BookVars = { id: string };
+
+const BOOK_QUERY = gql`
+  query Book($id: ID!) {
+    book(id: $id) {
+      id
+      title
+      author
+      rating
+      description
+    }
+  }
+`;
+
+const UPDATE_BOOK = gql`
+  mutation UpdateBook($input: BookUpdateInput!) {
+    updateBook(input: $input) {
+      id
+      title
+      author
+      rating
+      description
+    }
+  }
+`;
+
+export function BookEditPage() {
+  const { bookId } = useParams<{ bookId: string }>();
+  const navigate = useNavigate();
+
+  const { data, loading, error, refetch } = useQuery<BookData, BookVars>(BOOK_QUERY, {
+    variables: { id: String(bookId) },
+    skip: !bookId,
+    fetchPolicy: 'cache-first', // show cached book instantly if present
+  });
+
+  const [updateBook, { loading: saving }] = useMutation(UPDATE_BOOK, {
+    // Write updated book into cache for detail + list screens
+    update(cache, { data }) {
+      const updated = data?.updateBook as Book | undefined;
+      if (!updated) return;
+
+      // 1) Update detail query
+      cache.writeQuery<BookData, BookVars>({
+        query: BOOK_QUERY,
+        variables: { id: String(updated.id) },
+        data: { book: updated },
+      });
+
+      // 2) Update list query (if present) by replacing the item
+      // Adjust variables if your list uses different paging/search
+      try {
+        const LIST_QUERY = gql`
+          query Books($limit: Int!, $skip: Int, $search: String) {
+            books(limit: $limit, skip: $skip, search: $search) {
+              id
+              title
+              author
+              rating
+            }
+          }
+        `;
+        const vars = { limit: 10, skip: 0, search: undefined as string | undefined };
+        const existing = cache.readQuery<{ books: Book[] }>({ query: LIST_QUERY, variables: vars });
+        if (existing?.books) {
+          cache.writeQuery({
+            query: LIST_QUERY,
+            variables: vars,
+            data: {
+              books: existing.books.map((b) => (String(b.id) === String(updated.id) ? updated : b)),
+            },
+          });
+        }
+      } catch {
+        // list may not be cached; safe to ignore
+      }
+    },
+  });
+
+  if (loading) return <Text>Loading…</Text>;
+  if (error)
+    return (
+      <Stack>
+        <Text c="red">Error loading book.</Text>
+        <Button variant="light" onClick={() => refetch()}>
+          Retry
+        </Button>
+      </Stack>
+    );
+  if (!data?.book) {
+    return (
+      <Stack>
+        <Text c="dimmed">Book not found.</Text>
+        <Button component={RouterLink} to="/books" variant="light">
+          Back to Book List
+        </Button>
+      </Stack>
+    );
+  }
+
+  const b = data.book;
+
+  async function handleSubmit(values: BookFormValues) {
+    await updateBook({
+      variables: { input: { id: String(b.id), ...values } },
+      optimisticResponse: {
+        updateBook: {
+          __typename: 'Book',
+          id: b.id,
+          title: values.title,
+          author: values.author,
+          rating: values.rating,
+          description: values.description,
+        },
+      },
+    });
+    navigate(`/books/${b.id}`);
+  }
+
+  return (
+    <Stack>
+      <Group justify="space-between" align="center">
+        <Title order={2}>Edit Book</Title>
+        <Button variant="subtle" component={RouterLink} to={`/books/${b.id}`}>
+          Cancel
+        </Button>
+      </Group>
+
+      <BookForm
+        initial={{
+          title: b.title,
+          author: b.author,
+          description: b.description,
+          rating: b.rating,
+        }}
+        submitLabel="Save"
+        loading={saving}
+        onSubmit={handleSubmit}
+        onCancel={() => navigate(-1)}
+      />
+    </Stack>
+  );
+}
