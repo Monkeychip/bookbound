@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { BooksList, BookDetail, CreateBookPage, BookEditPage } from '../features/books'; // TODO consider path aliases for cleaner imports
+import { BooksList, BookDetail, CreateBookPage, BookEditPage } from '@features/books';
 import { AboutPage } from './AboutPage';
 
 // -----------------------------------------------------------------------------
@@ -19,16 +19,15 @@ import { AboutPage } from './AboutPage';
 //
 //   • `/books/new`
 //       ✏️ CREATE a new book (C in CRUD)
-//       TODO: Move creation form and add validation.
+//       TODO: add validation.
 //
 //   • `/books/:bookId`
 //       🔍 READ book details (R in CRUD)
-//       TODO: Add layout, metadata, and edit/delete links. Accessible from List view.
 //
 //   • `/books/:bookId/edit`
 //       🧩 UPDATE an existing book (U + D in CRUD)
 //       Separate route for clean back navigation.
-//       TODO: Add edit form with optimistic save + cancel.
+//       TODO: Accessibility with save + cancel.
 //
 //   • `/about`
 //       ℹ️ Static informational page.

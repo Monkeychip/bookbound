@@ -5,7 +5,11 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "jsx": "react-jsx",
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": "src",
+    "paths": {
+      "@features/*": ["features/*"]
+    }
   },
   "include": ["src", "server", "vite.config.ts"]
 }
