@@ -37,9 +37,24 @@ Parts of this project (documentation formatting, initial TypeScript scaffolding,
 were augmented using GenAI tools. All code, logic, and architectural decisions were reviewed
 and refined manually to ensure correctness and maintainability.
 
+> ### ⚙️ About the Data
+>
+> This demo uses the public DummyJSON API as a lightweight stand-in for a real
+> backend. Under the hood, Books are actually mapped from DummyJSON’s products
+> endpoint — so each "book" is, technically, a product with a title, brand,
+> description, and rating.
+>
+> It works surprisingly well for some entries (e.g., “Powder Canister” almost
+> sounds like the sequel to Lonesome Dove), though others — “Amazon Echo Plus"
+> — require an imagination.
+>
+> This mapping is intentional: it keeps the focus on demonstrating the data
+> flow, pagination, and caching patterns you’d expect in a real GraphQL + React + Apollo app.
+> Think of it as the literary equivalent of a movie “based on a
+> true story” — work with me, and enjoy the ride 📚✨
+
 ### Dummy data & caching behavior
 
-This demo uses DummyJSON’s `/products` endpoints as a stand-in for “books”.
 DummyJSON **does not persist** newly created items, so fetching a newly created
 book by id will not succeed on the backend.
 

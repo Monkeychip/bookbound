@@ -128,35 +128,54 @@ export function ListPage({
   const isSearching =
     networkStatus === NetworkStatus.setVariables || networkStatus === NetworkStatus.refetch;
 
-  // Delete with cache update
-  const [deleteBook, { loading: deleting }] = useMutation<DeleteBookData, DeleteBookVars>(
-    deleteMutation,
-    {
-      update(cache, _result, { variables }) {
-        const id = variables?.id;
-        if (!id) return;
+  // Delete with cache update. Track the id currently being deleted so only
+  // that row shows a disabled state. Avoid passing a single `deleting` flag
+  // down to all rows which causes the flicker effect you observed.
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
 
-        const existing = cache.readQuery<BooksData, BooksVars>({
-          query: BOOKS_QUERY,
-          variables: vars,
-        });
-        if (!existing?.books) return;
+  const [deleteBook] = useMutation<DeleteBookData, DeleteBookVars>(deleteMutation, {
+    update(cache, _result, { variables }) {
+      const id = variables?.id;
+      if (!id) return;
 
-        const filtered = existing.books.items.filter((b) => String(b.id) !== String(id));
-        cache.writeQuery<BooksData, BooksVars>({
-          query: BOOKS_QUERY,
-          variables: vars,
-          data: {
-            books: {
-              ...existing.books,
-              items: filtered,
-              total: Math.max(0, existing.books.total - 1),
-            },
+      const existing = cache.readQuery<BooksData, BooksVars>({
+        query: BOOKS_QUERY,
+        variables: vars,
+      });
+      if (!existing?.books) return;
+
+      const filtered = existing.books.items.filter((b) => String(b.id) !== String(id));
+      cache.writeQuery<BooksData, BooksVars>({
+        query: BOOKS_QUERY,
+        variables: vars,
+        data: {
+          books: {
+            ...existing.books,
+            items: filtered,
+            total: Math.max(0, existing.books.total - 1),
           },
-        });
-      },
+        },
+      });
     },
-  );
+  });
+
+  // Wrapper to call delete and manage per-row deleting state
+  const handleDelete = async (id: string | number) => {
+    try {
+      setDeletingId(id);
+      await deleteBook({
+        variables: { id },
+        // Optimistically assume the delete will succeed so the row
+        // disappears instantly from the UI (the `update` handler will
+        // reconcile the cache when the server responds).
+        optimisticResponse: {
+          deleteBook: true,
+        },
+      });
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <div style={{ padding: 16 }}>
@@ -230,9 +249,12 @@ export function ListPage({
           <ListRow
             key={b.id}
             entity={b}
-            onDelete={(id) => deleteBook({ variables: { id } })}
+            onDelete={(id) => void handleDelete(id)}
             onDetails={(id) => navigate(`${basePath}/${id}`)}
-            disabled={deleting}
+            // Only disable actions on the row being deleted to avoid a
+            // global flicker where all rows appear disabled while an
+            // item is being removed.
+            disabled={deletingId !== null && String(deletingId) === String(b.id)}
             renderTitle={renderTitle}
             renderMeta={renderMeta}
           />
