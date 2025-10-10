@@ -33,6 +33,6 @@ import { vi } from 'vitest';
 // collection time. Using the `.cjs` file avoids JSX/transform problems.
 vi.mock('@mantine/core', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mock = require('./test-utils/mantineMock.cjs');
+  const mock = require('../test/mocks/mantineMock.cjs');
   return mock;
 });

@@ -9,7 +9,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores(['dist', 'src/test-utils/mantineMock.ts', 'src/test-utils/mantineMock.tsx']),
+  globalIgnores(['dist', 'src/test-utils/mantineMock.*', 'test/mocks/**']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
