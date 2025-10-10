@@ -60,14 +60,9 @@ book by id will not succeed on the backend.
 
 To provide a seamless UX and to demonstrate scalable caching patterns, the app:
 
-- Uses an **Apollo cache redirect** for `Query.book` to resolve book detail
-  pages from the normalized cache (by `id`) immediately after creation.
-- Sets `fetchPolicy: 'cache-first'` on the detail query so a cache hit is
-  sufficient and we avoid a failing network request.
-- If the page is hard-refreshed, the in-memory cache is empty; the backend will
-  not find the non-persisted item.
-
-<!-- appended by automated edit: Import aliases -->
+- Books list is seeded once into an application-level reactive var (`booksVar`) via `initBooksStore()` and used as the in-memory source-of-truth.
+- Creates and deletes are applied optimistically to `booksVar` so the UI updates instantly; the GraphQL mutations are still sent to DummyJSON.
+- Detail pages use a cache-redirect + `cache-first` so newly-created items can be read from the normalized cache without a failing network request.
 
 ## Import aliases
 
@@ -159,5 +154,6 @@ Small follow-ups to finalize the recent refactors and developer docs:
 
 - [ ] Add a11y linting for tests (configure eslint-plugin-jsx-a11y for test environments)
 - [ ] Add CONTRIBUTING.md / contributors guidelines
+- [ ] Add Toast messaging for success/error messaging on transitions.
 - [ ] Build out mass-delete operations — see routing and batch API design
 - [ ] Add CI (GitHub Actions) for npm run build && npm run lint
