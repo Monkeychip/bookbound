@@ -256,7 +256,19 @@ export function ListPage({
             // item is being removed.
             disabled={deletingId !== null && String(deletingId) === String(b.id)}
             renderTitle={renderTitle}
-            renderMeta={renderMeta}
+            // Show author and rounded rating by default; callers can
+            // override by passing a custom `renderMeta` prop to ListPage.
+            renderMeta={
+              renderMeta ??
+              (((ent: Entity) => (
+                <Text c="cream.2" size="sm">
+                  {String((ent as Entity & { author?: string }).author ?? '')}
+                  {typeof (ent as Entity & { rating?: number }).rating === 'number'
+                    ? ` — ${Math.round((ent as Entity & { rating?: number }).rating!)}`
+                    : ''}
+                </Text>
+              )) as (e: Entity) => React.ReactNode)
+            }
           />
         ))}
       </Stack>
