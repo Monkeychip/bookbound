@@ -3,6 +3,7 @@ import { CREATE_BOOK } from '../api/mutations';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Title, Text } from '@mantine/core';
 import { BookForm, type BookFormValues } from '@/features/books';
+import { addBook } from '@/shared/lib/data/booksStore';
 
 /**
  * CreatePage
@@ -26,15 +27,33 @@ export function CreatePage() {
   const [createBook, { loading }] = useMutation<CreateBookData, CreateBookVars>(CREATE_BOOK);
 
   async function handleSubmit(values: BookFormValues) {
-    const { data } = await createBook({ variables: { input: values } });
-    const newId = data?.createBook.id;
-    if (newId != null) {
-      void navigate(`/books/${newId}`);
-    } else {
-      // fallback: go back to list if API didn’t return an
-      // TODO maybe toast an error instead?
-      void navigate('/books');
+    const optimistic = {
+      __typename: 'Book' as const,
+      id: Math.floor(Math.random() * 1000000),
+      title: values.title,
+      author: values.author,
+      rating: values.rating ?? 0,
+      description: values.description ?? '',
+    };
+
+    // Insert optimistically into the in-memory store so the list shows it
+    addBook(optimistic);
+
+    try {
+      const { data } = await createBook({ variables: { input: values } });
+      const newId = data?.createBook.id;
+      if (newId != null) {
+        // Replace optimistic entry in-place could be added, but for now
+        // we navigate to the list which will show the optimistic item.
+        void navigate('/books');
+        return;
+      }
+    } catch {
+      // ignore - optimistic entry remains until hard refresh
     }
+
+    // Fallback: navigate back to list regardless
+    void navigate('/books');
   }
 
   return (

@@ -64,8 +64,8 @@ export function ListToolbar({
           value={sortField}
           onChange={(v) => onSortFieldChange(v as SortField)}
           data={[
-            { label: 'Rating', value: 'RATING' },
             { label: 'Title', value: 'TITLE' },
+            { label: 'Rating', value: 'RATING' },
           ]}
         />
         <SegmentedControl

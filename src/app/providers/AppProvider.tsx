@@ -8,6 +8,8 @@ import { ThemeProvider } from './ThemeProvider';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '../styles/global.css'; // if global styles live there
+import { useEffect } from 'react';
+import { initBooksStore } from '@/shared/lib/data/booksStore';
 
 // TODO add docs
 
@@ -16,6 +18,9 @@ type AppProviderProps = {
 };
 
 export function AppProvider({ children }: AppProviderProps) {
+  useEffect(() => {
+    void initBooksStore();
+  }, []);
   return (
     <ApolloProvider client={apolloClient}>
       <MantineProvider defaultColorScheme="light">
