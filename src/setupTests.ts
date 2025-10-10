@@ -32,15 +32,19 @@ import { vi } from 'vitest';
 // Keep the factory synchronous and hoist-safe so Vitest can apply it at
 // collection time. Using the `.cjs` file avoids JSX/transform problems.
 vi.mock('@mantine/core', () => {
+  // use a typed require to load the hoist-safe CommonJS mock
+  // (keeps this factory synchronous for Vitest collection)
+  // eslint: we intentionally use require here for synchronous hoist-safe mocking
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mock = require('../test/mocks/mantineMock.cjs');
+  const mock = require('../test/mocks/mantineMock.cjs') as unknown as Record<string, unknown>;
   return mock;
 });
 
 // Mock mantine notifications to avoid importing the real package which
 // relies on Mantine's provider internals. Hoist-safe CJS mock.
 vi.mock('@mantine/notifications', () => {
+  // typed require for the hoist-safe notifications mock
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mock = require('../test/mocks/notificationsMock.cjs');
+  const mock = require('../test/mocks/notificationsMock.cjs') as unknown as Record<string, unknown>;
   return mock;
 });

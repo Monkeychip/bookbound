@@ -1,3 +1,0 @@
-# Ignore generated/placeholder test mocks used only to avoid editor parser issues
-src/test-utils/mantineMock.ts
-src/test-utils/mantineMock.tsx

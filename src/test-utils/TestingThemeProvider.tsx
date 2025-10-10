@@ -30,8 +30,13 @@ export function TestingThemeProvider({ children }: PropsWithChildren) {
   // real Mantine. Keeping the require here prevents Mantine from loading
   // during test setup where we want the mock to be used.
   // Lazy-require real ThemeProvider for non-test runtime.
+  // Lazily require the real ThemeProvider for non-test runtime. Cast to unknown
+  // then to the expected module shape to avoid lint rules complaining about
+  // require-style imports in TypeScript files used only at runtime.
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { ThemeProvider } = require('@/app/providers/ThemeProvider');
+  const { ThemeProvider } = require('@/app/providers/ThemeProvider') as unknown as {
+    ThemeProvider: React.FC<React.PropsWithChildren<unknown>>;
+  };
   return <ThemeProvider>{children}</ThemeProvider>;
 }
 
