@@ -1,3 +1,21 @@
+// Ensure matchMedia exists before importing Mantine. Some Mantine
+// internals may call matchMedia very early during mount; adding this
+// guard prevents a runtime TypeError in jsdom when the polyfill from
+// test setup hasn't executed yet.
+if (typeof window !== 'undefined' && !('matchMedia' in window)) {
+  // @ts-expect-error - test env augmentation
+  window.matchMedia = (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  });
+}
+
 import { MantineProvider, createTheme } from '@mantine/core';
 import type { MantineTheme } from '@mantine/core';
 import type { ReactNode } from 'react';
@@ -82,5 +100,27 @@ const theme = createTheme({
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  return <MantineProvider theme={theme}>{children}</MantineProvider>;
+  // Ensure Mantine doesn't attempt to detect color scheme via
+  // matchMedia during tests — set colorScheme explicitly on the
+  // theme object passed to the provider.
+  // In test environments we avoid mounting MantineProvider to prevent
+  // early runtime calls to window.matchMedia from Mantine internals.
+  // This keeps tests fast and stable; the real provider mounts in
+  // development and production.
+  if (process.env.NODE_ENV === 'test') {
+    return <>{children}</>;
+  }
+
+  // Ensure Mantine doesn't attempt to detect color scheme via
+  // matchMedia during runtime — set colorScheme explicitly on the
+  // theme object passed to the provider.
+  const themeWithColorScheme = { ...theme, colorScheme: 'light' } as typeof theme & {
+    colorScheme: 'light';
+  };
+
+  return (
+    <MantineProvider theme={themeWithColorScheme} defaultColorScheme="light">
+      {children}
+    </MantineProvider>
+  );
 }

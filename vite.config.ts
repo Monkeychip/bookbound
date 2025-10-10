@@ -4,6 +4,13 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    // Ensure the matchMedia polyfill loads first
+    setupFiles: ['./src/test-utils/matchMediaPolyfill.ts', './src/setupTests.ts'],
+    globals: true,
+    css: true,
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),

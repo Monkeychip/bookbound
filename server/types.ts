@@ -13,6 +13,7 @@ import type { GraphQLResolveInfo } from 'graphql';
  * @template Args - argument object passed to the resolver (e.g. `{ id: ID! }`).
  * @template Return - resolver return type.
  */
+
 export type ResolverFn<Args = Record<string, unknown>, Return = unknown> = (
   parent: ResolverParent,
   args: Args,
@@ -23,8 +24,8 @@ export type ResolverFn<Args = Record<string, unknown>, Return = unknown> = (
 /** Map of type->field->resolver helpers (convenience type). */
 export type ResolversMap = Record<string, Record<string, ResolverFn>>;
 
-/** Parent type for resolvers (intentionally generic for demo). */
+/** Parent type for resolvers (intentionally generic). */
 export type ResolverParent = unknown;
 
-/** Context shape available to resolvers (kept open for demo simplicity). */
+/** Context shape available to resolvers (kept open for simplicity). */
 export type ResolverContext = Record<string, unknown>;

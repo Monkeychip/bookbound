@@ -7,7 +7,7 @@ import { client as apolloClient } from '@/shared/lib/apollo/client';
 import { ThemeProvider } from './ThemeProvider';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
-import '../styles/global.css'; // if global styles live there
+import '../styles/global.css';
 import { useEffect } from 'react';
 import { initBooksStore } from '@/shared/lib/data/booksStore';
 
