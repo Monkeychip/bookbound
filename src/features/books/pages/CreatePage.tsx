@@ -5,17 +5,15 @@ import { Stack, Title, Text } from '@mantine/core';
 import { BookForm, type BookFormValues } from '@/features/books';
 
 /**
- * BookCreate
+ * CreatePage
  *
- * Uses the shared <BookForm /> to create a new book, then navigates to the
- * new book's detail page (/books/:id) on success.
- *
- * Responsibilities:
- * - Render BookForm with empty initial values
- * - Call CREATE_BOOK mutation and navigate to the new detail page
+ * Uses the shared `BookForm` to create a new book, then navigates to the
+ * new book's detail page (`/books/:id`) on success.
  *
  * @example
- * <Route path="/books/new" element={<BookCreate />} />
+ * ```tsx
+ * <Route path="/books/new" element={<CreatePage />} />
+ * ```
  */
 
 type Book = { id: number; title: string; author: string; rating: number; description: string };
@@ -23,7 +21,7 @@ type Book = { id: number; title: string; author: string; rating: number; descrip
 type CreateBookData = { createBook: Book };
 type CreateBookVars = { input: BookFormValues };
 
-export function BookCreate() {
+export function CreatePage() {
   const navigate = useNavigate();
   const [createBook, { loading }] = useMutation<CreateBookData, CreateBookVars>(CREATE_BOOK);
 
@@ -31,11 +29,11 @@ export function BookCreate() {
     const { data } = await createBook({ variables: { input: values } });
     const newId = data?.createBook.id;
     if (newId != null) {
-      navigate(`/books/${newId}`);
+      void navigate(`/books/${newId}`);
     } else {
       // fallback: go back to list if API didn’t return an
       // TODO maybe toast an error instead?
-      navigate('/books');
+      void navigate('/books');
     }
   }
 

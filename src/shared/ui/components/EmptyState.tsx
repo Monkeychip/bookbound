@@ -10,12 +10,19 @@ import { IconBookOff } from '@tabler/icons-react';
  * This component is intentionally UI-only and accepts React nodes for actions
  * so callers can provide buttons/links as appropriate.
  *
+ * @param title - Headline to show in the empty state.
+ * @param description - Supporting description text.
+ * @param action - Optional action node (button/link).
+ * @param icon - Optional icon node to show above the title.
+ *
  * @example
+ * ```tsx
  * <EmptyState
  *   title="No books"
  *   description="Add a book to get started"
  *   action={<Button component={Link} to="/books/new">Create</Button>}
  * />
+ * ```
  */
 
 export interface EmptyStateProps {

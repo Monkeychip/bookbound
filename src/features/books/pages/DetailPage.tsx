@@ -5,24 +5,26 @@ import { Button, Group, Rating, Stack, Text, Title } from '@mantine/core';
 import EmptyState from '@components/EmptyState';
 
 /**
- * BookDetail
+ * DetailPage
  *
  * Reads a single book by id and shows its fields. Serves as the "R" in CRUD.
  *
- * Notes:
- * - Uses cache-first fetchPolicy so recently-created books show immediately
- *   after creation (optimistic updates), but still supports refetch on demand.
- * - When a book is not found, renders an EmptyState with navigation options.
+ * @remarks
+ * Uses `cache-first` fetch policy so recently-created books can show
+ * immediately via cache redirects. Renders an `EmptyState` when the book
+ * cannot be found (DummyJSON doesn't persist new records).
  *
  * @example
- * <Route path="/books/:bookId" element={<BookDetail />} />
+ * ```tsx
+ * <Route path="/books/:bookId" element={<DetailPage />} />
+ * ```
  */
 
 type Book = { id: number; title: string; author: string; rating: number; description: string };
 type BookData = { book: Book | null };
 type BookVars = { id: string };
 
-export function BookDetail() {
+export function DetailPage() {
   const { bookId } = useParams<{ bookId: string }>();
   const { data, loading, error, refetch } = useQuery<BookData, BookVars>(BOOK_QUERY, {
     variables: { id: String(bookId) },

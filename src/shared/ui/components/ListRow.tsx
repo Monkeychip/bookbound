@@ -2,6 +2,7 @@ import { Anchor, Group, Paper, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { RowMenu } from './RowMenu';
 import { useState } from 'react';
+import type { LooseObject } from '../../types';
 
 /**
  * ListRow
@@ -10,27 +11,43 @@ import { useState } from 'react';
  * optional subtitle/meta, and a contextual menu. Keep this component
  * presentational — pass callbacks for actions.
  *
+ * @template T - entity shape (must include `id` and optionally `title`/`subtitle`).
+ *
+ * @remarks
+ * Use the `renderTitle` and `renderMeta` callbacks to fully control how the
+ * row content is rendered for a given entity type.
+ *
+ * @param entity - The resource/entity to render in the row.
+ * @param onDelete - Callback when the Delete action is triggered.
+ * @param onDetails - Optional callback to open details for the entity.
+ * @param disabled - Disable row actions when true.
+ * @param renderTitle - Optional custom renderer for the main title link.
+ * @param renderMeta - Optional custom renderer for subtitle/meta information.
+ *
  * @example
- * // Basic usage inside a list
- * <ListRow
+ * ```tsx
+ * // Generic usage inside a list (typed entity)
+ * type Item = { id: number; title: string; subtitle?: string };
+ * <ListRow<Item>
  *   entity={{ id: 12, title: 'The Silent Pine', subtitle: 'A. Author' }}
- *   onDetails={(id) => navigate(`/books/${id}`)}
+ *   onDetails={(id) => navigate(`/items/${id}`)}
  *   onDelete={(id) => deleteItem(id)}
  * />
+ * ```
  *
- * // Custom title rendering (custom route)
- * <ListRow
+ * @example
+ * ```tsx
+ * // Render custom title/meta with generics
+ * <ListRow<Item>
  *   entity={project}
  *   renderTitle={(p) => <Anchor component={Link} to={`/projects/${p.id}`}>{p.title}</Anchor>}
  *   renderMeta={(p) => <Text size="sm">{p.owner}</Text>}
- *   onDelete={...}
+ *   onDelete={() => {}}
  * />
+ * ```
  */
 
-export type Row = { id: string | number; title?: string; subtitle?: string } & Record<
-  string,
-  unknown
->;
+export type Row = { id: string | number; title?: string; subtitle?: string } & LooseObject;
 
 type ListRowProps<T extends Row = Row> = {
   entity: T;

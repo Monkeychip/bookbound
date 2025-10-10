@@ -1,5 +1,6 @@
 import { MantineProvider, createTheme } from '@mantine/core';
-import { ReactNode } from 'react';
+import type { MantineTheme } from '@mantine/core';
+import type { ReactNode } from 'react';
 import tokens from '../../shared/ui/theme/tokens';
 
 /**
@@ -32,32 +33,32 @@ const theme = createTheme({
       },
     },
     Breadcrumbs: {
-      styles: (theme: { spacing: { lg: string }; colors: { cream: number[] } }) => ({
+      styles: (theme: MantineTheme) => ({
         root: { marginBottom: theme.spacing.lg },
-        separator: { color: theme.colors.cream[4] },
+        separator: { color: (theme.colors.cream ?? [])[4] },
       }),
     },
     Button: {
       defaultProps: { radius: 'md', fw: 500 },
-      styles: (theme: { colors: { orangeAccent: number[]; cream: number[] } }) => ({
+      styles: (theme: MantineTheme) => ({
         root: {
-          backgroundColor: theme.colors.orangeAccent[6],
-          color: theme.colors.cream[0],
+          backgroundColor: (theme.colors.orangeAccent ?? [])[6],
+          color: (theme.colors.cream ?? [])[0],
           '&:hover': {
-            backgroundColor: theme.colors.orangeAccent[7],
+            backgroundColor: (theme.colors.orangeAccent ?? [])[7],
           },
           '&:disabled': {
-            backgroundColor: theme.colors.orangeAccent[2],
-            color: theme.colors.cream[4],
+            backgroundColor: (theme.colors.orangeAccent ?? [])[2],
+            color: (theme.colors.cream ?? [])[4],
           },
         },
       }),
     },
     InputWrapper: {
-      styles: (theme: { colors: { cream: unknown[]; red: unknown[] } }) => ({
-        description: { color: theme.colors.cream[3] }, // helper text
-        error: { color: theme.colors.red[4] },
-        label: { color: theme.colors.cream[1] },
+      styles: (theme: MantineTheme) => ({
+        description: { color: (theme.colors.cream ?? [])[3] }, // helper text
+        error: { color: (theme.colors.red ?? [])[4] },
+        label: { color: (theme.colors.cream ?? [])[1] },
       }),
     },
     Menu: {

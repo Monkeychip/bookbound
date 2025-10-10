@@ -56,18 +56,66 @@ To provide a seamless UX and to demonstrate scalable caching patterns, the app:
 
 ## Import aliases
 
-The project defines path aliases to keep imports concise and consistent. Prefer using these when importing shared modules:
+The project defines path aliases (configured in `tsconfig.json` and `vite.config.ts`) to keep imports concise and consistent. Use these aliases when importing shared modules or feature barrels.
 
-- `@components/*` — shared UI components (buttons, lists, rows, empty states, etc.)
-- `@features/*` — feature-level pages and logic (books, authors, etc.)
-- `@assets/*` — static assets
+Primary aliases:
 
-Example:
+- `@/*` — app-root shorthand for `src/` (use for absolute imports within the src tree)
+- `@features/*` — feature-level public barrels (e.g. `@features/books`)
+- `@assets/*` — static assets under `src/assets`
+- `@components/*` — shared UI primitives under `src/shared/ui/components`
+
+Guidance:
+
+- Prefer `@components/*` for truly shared UI primitives (buttons, lists, empty states, generic rows).
+- Prefer feature barrels (e.g. `@features/books`) to import pages, feature-local components and hooks.
+- Use `@/*` when you want an absolute path into the `src/` tree but there isn't a more specific alias.
+
+Examples:
 
 ```ts
 import BreadcrumbsBar from '@components/BreadcrumbsBar';
-import { BookDetail } from '@features/books';
+import { DetailPage } from '@features/books';
+import cover from '@assets/next-chapter-mark.svg';
 ```
+
+## TypeScript patterns
+
+Small conventions we follow in this repo to keep runtime safety high and the
+type surface pleasant for reviewers.
+
+- Use `unknown` for external/untyped inputs (network JSON, third-party data).
+  Never access properties on `unknown` directly — narrow it first with a
+  runtime guard.
+
+- Runtime guards live in `src/shared/types/runtime.ts` (re-usable helpers
+  like `isObject`, `hasPropOfType`). Prefer these helpers instead of ad-hoc
+  `typeof` checks scattered across the codebase.
+
+  Example:
+
+  ```ts
+  import { isObject, hasPropOfType } from '@/shared/types/runtime';
+
+  function parseProduct(data: unknown) {
+    if (!isObject(data) || !hasPropOfType(data, 'id', 'number')) {
+      throw new Error('Invalid product');
+    }
+    // `data` is now narrowed and safe to use
+    return data;
+  }
+  ```
+
+- `LooseObject` is a small alias (`src/shared/types/index.ts`) for
+  `Record<string, unknown>`; use it for open-shaped records when you need to
+  attach unknown properties, but prefer specific types where possible.
+
+- Avoid `any`. If you really need to opt-out of type-checking for a tight
+  localized edge case, prefer `unknown` + narrow or add a small helper that
+  documents why the exception is safe.
+
+This short section is useful to paste into PR notes when you want a quick
+explanation of the repository's runtime-typing approach.
 
 ## Project structure
 
@@ -97,3 +145,4 @@ Small follow-ups to finalize the recent refactors and developer docs:
 - [ ] Add a11y linting for tests (configure eslint-plugin-jsx-a11y for test environments)
 - [ ] Add CONTRIBUTING.md / contributors guidelines
 - [ ] Build out mass-delete operations — see routing and batch API design
+- [ ] Add CI (GitHub Actions) for npm run build && npm run lint

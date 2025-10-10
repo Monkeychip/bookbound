@@ -8,15 +8,24 @@ import { Button, Group, Input, Rating, Stack, Text, Textarea, TextInput } from '
  * to call and passes loading/disabled state. This keeps data-fetching concerns
  * outside the form and lets Detail/Edit share the same UI.
  *
- * The form exposes a typed onSubmit callback and ensures basic client-side
+ * The form exposes a typed `onSubmit` callback and ensures basic client-side
  * validation (title and author required). Accessibility features include
- * aria-describedby on the form and required indicators on inputs.
+ * `aria-describedby` on the form and required indicators on inputs.
+ *
+ * @param {Partial<BookFormValues>} [initial] - Optional initial field values.
+ * @param {boolean} [loading] - When true, the submit button shows a loading state.
+ * @param {boolean} [disabled] - When true, form inputs and actions are disabled.
+ * @param {string} [submitLabel] - Label for the submit button (e.g. 'Create'|'Save').
+ * @param {(values: BookFormValues) => void|Promise<void>} onSubmit - Called when the form is submitted with validated values.
+ * @param {() => void} [onCancel] - Optional cancel handler shown as a secondary button.
  *
  * @example
+ * ```tsx
  * <BookForm
  *   initial={{ title: '', author: '', description: '', rating: 0 }}
  *   onSubmit={(values) => createBook({ variables: { input: values } })}
  * />
+ * ```
  */
 
 export type BookFormValues = {

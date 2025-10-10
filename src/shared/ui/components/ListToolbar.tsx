@@ -10,7 +10,15 @@ import React from 'react';
  * Keeps list-related controls in one place so the list component focuses on
  * data fetching and rendering.
  *
+ * @param search - Current search string.
+ * @param onSearchChange - Called when the search text changes.
+ * @param sortField - Currently selected sort field.
+ * @param onSortFieldChange - Called when the sort field changes.
+ * @param sortOrder - Current sort order.
+ * @param onSortOrderChange - Called when the sort order changes.
+ *
  * @example
+ * ```tsx
  * <ListToolbar
  *   search={search}
  *   onSearchChange={setSearch}
@@ -19,6 +27,7 @@ import React from 'react';
  *   sortOrder={sortOrder}
  *   onSortOrderChange={setSortOrder}
  * />
+ * ```
  */
 
 type SortField = 'RATING' | 'TITLE';

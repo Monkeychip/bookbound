@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { BookCore, BookDetailFragment } from './fragments';
+import { BookCore, DetailPageFragment } from './fragments';
 
 /**
  * Queries for the books feature.
@@ -23,10 +23,10 @@ export const BOOKS_QUERY = gql`
 export const BOOK_QUERY = gql`
   query Book($id: ID!) {
     book(id: $id) {
-      ...BookDetail
+      ...DetailPage
     }
   }
-  ${BookDetailFragment}
+  ${DetailPageFragment}
 `;
 
 export const BOOK_TITLE_QUERY = gql`

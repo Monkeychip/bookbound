@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { BookDetail, BookCreate, BookEdit, BooksList } from '@/features/books';
+import { DetailPage, CreatePage, EditPage, ListPage } from '@/features/books';
 import { AboutPage } from './AboutPage';
 import { Layout } from './Layout';
 
@@ -9,15 +9,14 @@ import { Layout } from './Layout';
  * Top-level route configuration for the application.
  * Route planner comments remain below for development notes.
  */
-// Planned CRUD route map:
+//----Planned CRUD route map:--------------------------------------------------
 //
 //   • `/books`
-//       📚 LIST view for all books. Supports pagination, sorting, and filtering via query params (?page=&sort=&q=&filter=).
-//       Handles bulk DELETE actions:
+//       📚 LIST view for all books. Supports pagination, sorting, and filtering.
+//       TODO: Handle bulk DELETE actions:
 //         – Delete selected (confirm modal + count summary)
 //         – Delete filtered results (with typed confirmation and filter summary)
 //         – Delete ALL books (global delete, "DELETE ALL BOOKS" confirmation)
-//       TODO: Add bulk-selection UI and delete modals.
 //
 //   • `/books/new`
 //       ✏️ CREATE a new book (C in CRUD)
@@ -29,29 +28,29 @@ import { Layout } from './Layout';
 //   • `/books/:bookId/edit`
 //       🧩 UPDATE an existing book (U + D in CRUD)
 //       Separate route for clean back navigation.
-//       TODO: Accessibility with save + cancel.
 //
 //   • `/about`
 //       ℹ️ Static informational page.
+//       TODO: add text.
 //
 //   • `/` and all unknown routes
 //       Redirect → `/books`
 //
 // Notes:
 //   – `/books` handles all list-level delete operations (bulk + global).
-//   – `/books/:bookId/delete` will handle single deletes with modal.
 //   – Route hierarchy designed for clarity, undo safety, and easy CRUD expansion.
+// ---------------------------------------------------------------------
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Navigate to="/books" replace />} />
-        <Route path="/books" element={<BooksList />} />
+        <Route path="/books" element={<ListPage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/books/:bookId" element={<BookDetail />} />
-        <Route path="/books/new" element={<BookCreate />} />
-        <Route path="/books/:bookId/edit" element={<BookEdit />} />
+        <Route path="/books/:bookId" element={<DetailPage />} />
+        <Route path="/books/new" element={<CreatePage />} />
+        <Route path="/books/:bookId/edit" element={<EditPage />} />
         <Route path="*" element={<Navigate to="/books" replace />} />
       </Route>
     </Routes>

@@ -9,25 +9,22 @@ import { Link as RouterLink } from 'react-router-dom';
 import EmptyState from '@components/EmptyState';
 
 /**
- * BookEdit
+ * EditPage
  *
- * Loads a book, pre-fills <BookForm />, and updates via mutation. Uses
+ * Loads a book, pre-fills `BookForm`, and updates via mutation. Uses
  * optimistic UI + cache write for instant feedback.
  *
- * Responsibilities:
- * - Fetch the book by id
- * - Provide initial values to BookForm
- * - Update cache on mutation so detail and list views reflect changes
- *
  * @example
- * <Route path="/books/:bookId/edit" element={<BookEdit />} />
+ * ```tsx
+ * <Route path="/books/:bookId/edit" element={<EditPage />} />
+ * ```
  */
 
 type Book = { id: number; title: string; author: string; rating: number; description: string };
 type BookData = { book: Book | null };
 type BookVars = { id: string };
 
-export function BookEdit() {
+export function EditPage() {
   const { bookId } = useParams<{ bookId: string }>();
   const navigate = useNavigate();
 
@@ -120,7 +117,7 @@ export function BookEdit() {
         },
       },
     });
-    navigate(`/books/${b.id}`);
+    void navigate(`/books/${b.id}`);
   }
 
   return (

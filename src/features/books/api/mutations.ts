@@ -1,27 +1,27 @@
 import { gql } from '@apollo/client';
-import { BookDetailFragment } from './fragments';
+import { DetailPageFragment } from './fragments';
 
 /**
- * Mutations used by the books feature. These mutations return the BookDetail
+ * Mutations used by the books feature. These mutations return the DetailPage
  * fragment when appropriate so callers can update the cache reliably.
  */
 
 export const CREATE_BOOK = gql`
-  mutation CreateBook($input: BookCreateInput!) {
+  mutation CreateBook($input: CreatePageInput!) {
     createBook(input: $input) {
-      ...BookDetail
+      ...DetailPage
     }
   }
-  ${BookDetailFragment}
+  ${DetailPageFragment}
 `;
 
 export const UPDATE_BOOK = gql`
   mutation UpdateBook($input: BookUpdateInput!) {
     updateBook(input: $input) {
-      ...BookDetail
+      ...DetailPage
     }
   }
-  ${BookDetailFragment}
+  ${DetailPageFragment}
 `;
 
 export const DELETE_BOOK = gql`

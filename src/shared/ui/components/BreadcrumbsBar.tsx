@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { BOOK_TITLE_QUERY } from '@features/books/api/queries';
-import { DocumentNode } from 'graphql';
+import type { DocumentNode } from 'graphql';
 import { Breadcrumbs, Anchor, Text } from '@mantine/core';
 import { Link as RouterLink, useLocation, useParams } from 'react-router-dom';
 
@@ -18,8 +18,14 @@ import { Link as RouterLink, useLocation, useParams } from 'react-router-dom';
  *   the entity title for detail/edit routes. The hook is called unconditionally
  *   but the query is skipped when not needed to follow React hook rules.
  *
+ * @param basePath - Base collection path, e.g. '/books'.
+ * @param newLabel - Label to show for the create/new action.
+ * @param fetchTitleQuery - Optional GraphQL document to fetch the entity title.
+ *
  * @example
+ * ```tsx
  * <BreadcrumbsBar basePath="/projects" newLabel="Create Project" fetchTitleQuery={PROJECT_TITLE_QUERY} />
+ * ```
  *
  * This component intentionally keeps routing and fetching configurable so it
  * can be reused across features without leaking book-specific assumptions.

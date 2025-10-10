@@ -8,12 +8,23 @@ import { IconDots } from '@tabler/icons-react';
  * Delete for an individual item. The trigger is keyboard-focusable and
  * includes ARIA attributes to improve accessibility.
  *
+ * @remarks
+ * The `label` prop is used to provide accessible labels and should be a
+ * short human-readable string (e.g. the item's title).
+ *
+ * @param onDetails - Called when the Details item is selected.
+ * @param onDelete - Called when the Delete item is selected.
+ * @param label - Human-readable label used for ARIA attributes and titles.
+ * @param disabled - Optional flag to disable menu actions.
+ *
  * @example
+ * ```tsx
  * <RowMenu
- *   label="The Silent Pine"
- *   onDetails={() => navigate('/books/12')}
- *   onDelete={() => deleteBook(12)}
+ *   label={item.title}
+ *   onDetails={() => navigate(`/items/${item.id}`)}
+ *   onDelete={() => removeItem(item.id)}
  * />
+ * ```
  */
 
 type RowMenuProps = {

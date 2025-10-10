@@ -1,5 +1,5 @@
 // Barrel for books feature pages (route-level components)
-export { BookDetail } from './BookDetail';
-export { BookCreate } from './BookCreate';
-export { BookEdit } from './BookEdit';
-export { BooksList } from './BooksList';
+export { DetailPage } from './DetailPage';
+export { CreatePage } from './CreatePage';
+export { EditPage } from './EditPage';
+export { ListPage } from './ListPage';

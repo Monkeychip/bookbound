@@ -1,22 +1,31 @@
 import { Button, Group, Pagination, Stack, Text } from '@mantine/core';
 import { ListRow, ListToolbar, EmptyState } from '../../../shared/ui/components';
 import { useDebouncedValue } from '@mantine/hooks';
-import { useMutation, useQuery, NetworkStatus, DocumentNode } from '@apollo/client';
+import { useMutation, useQuery, NetworkStatus } from '@apollo/client';
+import type { DocumentNode } from '@apollo/client';
 import { BOOKS_QUERY } from '@features/books/api/queries';
 import { DELETE_BOOK } from '@features/books/api/mutations';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 /**
- * BooksList
+ * ListPage
  *
  * List view with search, sort and pagination. Uses `BOOKS_QUERY` to fetch
  * paginated results and renders `BookRow` for each item. The component keeps
  * data concerns (fetching, pagination, delete) at the list level and leaves
  * presentation to `BookRow`.
  *
+ * @param basePath - Base path for details/navigation (defaults to '/books').
+ * @param queryDocument - Optional GraphQL document override for the list query.
+ * @param deleteMutation - Optional GraphQL mutation document to use for deletes.
+ * @param renderTitle - Optional custom renderer for the row title.
+ * @param renderMeta - Optional custom renderer for the row meta/subtitle.
+ *
  * @example
- * <BooksList />
+ * ```tsx
+ * <ListPage />
+ * ```
  */
 
 type Book = { id: number; title: string; author: string; rating: number };
@@ -42,9 +51,11 @@ type DeleteBookVars = { id: string | number };
 
 const PAGE_SIZE = 10;
 
-type Entity = { id: string | number; title?: string; subtitle?: string } & Record<string, unknown>;
+import type { LooseObject } from '../../../shared/types';
 
-type BooksListProps = {
+type Entity = { id: string | number; title?: string; subtitle?: string } & LooseObject;
+
+type ListPageProps = {
   basePath?: string;
   queryDocument?: DocumentNode;
   deleteMutation?: DocumentNode;
@@ -52,13 +63,13 @@ type BooksListProps = {
   renderMeta?: (e: Entity) => React.ReactNode;
 };
 
-export function BooksList({
+export function ListPage({
   basePath = '/books',
   queryDocument = BOOKS_QUERY,
   deleteMutation = DELETE_BOOK,
   renderTitle,
   renderMeta,
-}: BooksListProps) {
+}: ListPageProps) {
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 300);
   const navigate = useNavigate();

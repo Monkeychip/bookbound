@@ -6,6 +6,11 @@
  * schema, and `resolvers` map operations to REST calls. DummyJSON's
  * `/products` endpoints are used as a stand-in for demo data.
  *
+ * @remarks
+ * Resolver signatures follow the `ResolverFn<Args, Return>` helper from
+ * `server/types.ts` so callers get typed `args`, `context`, and `info`
+ * objects in IDE hovers.
+ *
  * Note: mapping "products" → "books" is knowingly a bit of a stretch.
  * Some entries (e.g., “Powder Canister”) resemble plausible book-like titles,
  * while others (“Mascara”, “Moisturizer”) do not. The goal here is to
@@ -60,13 +65,12 @@ function toBook(p: DummyProduct): Book {
   };
 }
 
+import { isObject, hasPropOfType } from '../src/shared/types/runtime';
+import type { ResolverParent } from './types';
+
 function isDummyProduct(x: unknown): x is DummyProduct {
-  return (
-    typeof x === 'object' &&
-    x !== null &&
-    typeof (x as { id?: unknown }).id === 'number' &&
-    typeof (x as { title?: unknown }).title === 'string'
-  );
+  if (!isObject(x)) return false;
+  return hasPropOfType(x, 'id', 'number') && hasPropOfType(x, 'title', 'string');
 }
 
 // -----------------------------------------------------------------------------
@@ -98,7 +102,7 @@ export const typeDefs = `
     rating: Float!
   }
 
-  input BookCreateInput {
+  input CreatePageInput {
     title: String!
     author: String!
     description: String!
@@ -131,7 +135,7 @@ export const typeDefs = `
   }
 
   type Mutation {
-    createBook(input: BookCreateInput!): Book!
+    createBook(input: CreatePageInput!): Book!
     updateBook(input: BookUpdateInput!): Book!
     deleteBook(id: ID!): Boolean!
   }
@@ -142,7 +146,7 @@ export const resolvers = {
   Query: {
     // Fetch paginated list of books (maps to DummyJSON /products or /products/search)
     books: async (
-      _: unknown,
+      _parent: ResolverParent,
       args: {
         search?: string;
         limit?: number;
@@ -210,11 +214,11 @@ export const resolvers = {
       };
     },
     // Fetch a single book by ID
-    book: async (_: unknown, { id }: { id: string }) => {
+    book: async (_parent: ResolverParent, { id }: { id: string }) => {
       const res = await fetch(`${DUMMY_BASE}/products/${id}`);
       if (!res.ok) return null;
 
-      const data: unknown = await res.json();
+      const data = await res.json();
       if (!isDummyProduct(data)) return null;
 
       return toBook(data);
@@ -222,7 +226,7 @@ export const resolvers = {
   },
   Mutation: {
     // Create a new "Book" using DummyJSON's /products/add
-    createBook: async (_: unknown, { input }: { input: Partial<Book> }) => {
+    createBook: async (_parent: ResolverParent, { input }: { input: Partial<Book> }) => {
       const payload = {
         title: input.title,
         brand: input.author,
@@ -237,13 +241,16 @@ export const resolvers = {
       });
       if (!res.ok) throw new Error(`Create failed: ${res.status}`);
 
-      const data: unknown = await res.json();
+      const data = await res.json();
       if (!isDummyProduct(data)) throw new Error('Unexpected response shape from DummyJSON');
 
       return toBook(data);
     },
     // Update an existing Book using DummyJSON's /products/:id
-    updateBook: async (_: unknown, { input }: { input: Partial<Book> & { id: string } }) => {
+    updateBook: async (
+      _parent: ResolverParent,
+      { input }: { input: Partial<Book> & { id: string } },
+    ) => {
       const { id, ...rest } = input;
       const payload: DummyProductUpdate = {};
       if (rest.title !== undefined) payload.title = rest.title;
@@ -258,13 +265,13 @@ export const resolvers = {
       });
       if (!res.ok) throw new Error(`Update failed: ${res.status}`);
 
-      const data: unknown = await res.json();
+      const data = await res.json();
       if (!isDummyProduct(data)) throw new Error('Unexpected response shape from DummyJSON');
 
       return toBook(data);
     },
     // Delete a book using DummyJSON's /products/:id
-    deleteBook: async (_: unknown, { id }: { id: string }) => {
+    deleteBook: async (_parent: ResolverParent, { id }: { id: string }) => {
       const res = await fetch(`${DUMMY_BASE}/products/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
       return true;

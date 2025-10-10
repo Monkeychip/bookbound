@@ -1,7 +1,11 @@
-// Feature barrel for the Books feature
-// Re-export public pages, components and hooks. Keep this barrel focused on
-// runtime UI/logic - avoid re-exporting server-only or build-time modules.
+/**
+ * Books feature barrel
+ *
+ * Public runtime surface for the feature. Re-export only pages, feature-local
+ * components and hooks. Keep server types and build-time modules out of this
+ * barrel to avoid accidental bundling or circular re-exports.
+ */
 
-export * from './pages';
-export * from './components';
-export * from './hooks/useBookSearch';
+export { DetailPage, CreatePage, EditPage, ListPage } from './pages';
+export { BookForm, type BookFormValues, BookRow, BookRowMenu } from './components';
+export { useBookSearch } from './hooks/useBookSearch';
