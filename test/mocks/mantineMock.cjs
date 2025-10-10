@@ -15,6 +15,62 @@ exports.Group = function Group(props) {
   return React.createElement('div', props, props.children);
 };
 
+exports.Button = function Button(props) {
+  const { children, component: Component, ...rest } = props || {};
+  if (Component) return React.createElement(Component, rest, children);
+  return React.createElement('button', Object.assign({ type: 'button' }, rest), children);
+};
+
+exports.Stack = function Stack(props) {
+  return React.createElement('div', props, props.children);
+};
+
+exports.Pagination = function Pagination(props) {
+  // Render a simple nav/list for pagination in tests
+  const { children } = props || {};
+  return React.createElement('nav', Object.assign({ 'data-testid': 'pagination' }, props), children);
+};
+
+exports.TextInput = function TextInput(props) {
+  const { value, onChange, placeholder, ...rest } = props || {};
+  return React.createElement('input', Object.assign({ value: value ?? '', placeholder, onChange }, rest));
+};
+
+exports.Center = function Center(props) {
+  return React.createElement('div', Object.assign({ style: { display: 'flex', justifyContent: 'center', alignItems: 'center' } }, props), props.children);
+};
+
+exports.ThemeIcon = function ThemeIcon(props) {
+  return React.createElement('div', props, props.children);
+};
+
+exports.SegmentedControl = function SegmentedControl(props) {
+  // Render options as buttons; call onChange with value when clicked
+  const { data = [], value, onChange } = props || {};
+  return React.createElement(
+    'div',
+    props,
+    (data || []).map((d, i) =>
+      React.createElement(
+        'button',
+        {
+          key: d.value ?? i,
+          'data-value': d.value,
+          onClick: () => onChange && onChange(String(d.value)),
+          type: 'button',
+        },
+        d.label
+      )
+    )
+  );
+};
+
+exports.Title = function Title(props) {
+  const { order = 3, children, ...rest } = props || {};
+  const Tag = `h${order}`;
+  return React.createElement(Tag, rest, children);
+};
+
 exports.Anchor = function Anchor(props) {
   // Support Mantine's `component` prop (e.g. component={Link}) by rendering
   // the provided component when present. Otherwise render a plain <a>.

@@ -36,3 +36,11 @@ vi.mock('@mantine/core', () => {
   const mock = require('../test/mocks/mantineMock.cjs');
   return mock;
 });
+
+// Mock mantine notifications to avoid importing the real package which
+// relies on Mantine's provider internals. Hoist-safe CJS mock.
+vi.mock('@mantine/notifications', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const mock = require('../test/mocks/notificationsMock.cjs');
+  return mock;
+});
