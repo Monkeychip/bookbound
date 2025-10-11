@@ -15,12 +15,6 @@ npm test
 npx vitest
 ```
 
-- Run only tests under `src/` (faster, avoids any third-party discovery):
-
-```bash
-npx vitest run src --reporter verbose
-```
-
 Notes:
 
 - The project includes a global test setup at `src/setupTests.ts`. That file
