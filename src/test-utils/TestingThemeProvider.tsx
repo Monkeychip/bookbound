@@ -2,27 +2,11 @@ import type { PropsWithChildren } from 'react';
 import React from 'react';
 
 export function TestingThemeProvider({ children }: PropsWithChildren) {
-  // During tests we must ensure `window.matchMedia` exists before any
-  // Mantine code runs. Some environments import Mantine earlier than the
-  // global setup, so defensively polyfill here before requiring Mantine.
+  // In tests we avoid loading Mantine at all. Return children directly so
+  // components render without Mantine wrappers and don't trigger
+  // matchMedia or provider hooks. The global polyfill (matchMediaPolyfill)
+  // is imported by test setup and by helpers that run before UI mounts.
   if (process.env.NODE_ENV === 'test') {
-    if (typeof window !== 'undefined' && !('matchMedia' in window)) {
-      // @ts-expect-error - test-only augmentation
-      window.matchMedia = (query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: () => {},
-        removeListener: () => {},
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        dispatchEvent: () => false,
-      });
-    }
-
-    // In tests we avoid loading Mantine at all. Return children directly so
-    // components render without Mantine wrappers and don't trigger
-    // matchMedia or provider hooks.
     return <>{children}</>;
   }
 
