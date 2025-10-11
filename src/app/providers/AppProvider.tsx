@@ -11,8 +11,6 @@ import '../styles/global.css';
 import { useEffect } from 'react';
 import { initBooksStore } from '@/shared/lib/data/booksStore';
 
-// TODO add docs
-
 type AppProviderProps = {
   children: React.ReactNode;
 };

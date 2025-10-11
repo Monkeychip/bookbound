@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Group, Pagination, Stack, Text } from '@mantine/core';
+import { Button, Group, Pagination, Stack, Text, Anchor } from '@mantine/core';
 import { ListRow, ListToolbar, EmptyState } from '../../../shared/ui/components';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useMutation, useReactiveVar } from '@apollo/client';
@@ -148,7 +148,14 @@ export function ListPage({
                 onDelete={(id) => void handleDelete(id)}
                 onDetails={(id) => navigate(`${basePath}/${id}`)}
                 disabled={deletingId !== null && String(deletingId) === String(b.id)}
-                renderTitle={renderTitle}
+                renderTitle={
+                  renderTitle ??
+                  ((ent: Entity) => (
+                    <Anchor component={Link} to={`${basePath}/${ent.id}`} c="cream.0" fw={700}>
+                      {String(ent.title)}
+                    </Anchor>
+                  ))
+                }
                 renderMeta={
                   renderMeta ??
                   ((ent: Entity) => (

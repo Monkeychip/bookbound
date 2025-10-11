@@ -31,8 +31,16 @@ export function BookRow({ book, onDelete, onDetails, disabled }: Props) {
       onDelete={onDelete}
       onDetails={onDetails}
       disabled={disabled}
-      renderMeta={(b) => <span>{(b as Book).author ?? ''}</span>}
-      renderTitle={(b) => <a href={`/books/${b.id}`}>{b.title}</a>}
+      renderMeta={(b) => (
+        <span data-testid={`book-author-${String((b as Book).id)}`}>
+          {(b as Book).author ?? ''}
+        </span>
+      )}
+      renderTitle={(b) => (
+        <a data-testid={`book-link-${String(b.id)}`} href={`/books/${b.id}`}>
+          {b.title}
+        </a>
+      )}
     />
   );
 }

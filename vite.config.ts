@@ -10,6 +10,8 @@ export default defineConfig({
     setupFiles: ['./src/test-utils/matchMediaPolyfill.ts', './src/setupTests.ts'],
     globals: true,
     css: true,
+    // Exclude larger e2e/test helper directories and node_modules from unit test collection
+    exclude: ['e2e/**', 'test/**', '.removed_tests/**', 'node_modules/**'],
   },
   resolve: {
     alias: {

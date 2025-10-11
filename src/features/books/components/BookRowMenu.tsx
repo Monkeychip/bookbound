@@ -23,6 +23,7 @@ type Props = {
  * @example
  * <BookRowMenu book={book} onDelete={removeBook} />
  */
+
 export function BookRowMenu({ book, onDelete, disabled }: Props) {
   const navigate = useNavigate();
 

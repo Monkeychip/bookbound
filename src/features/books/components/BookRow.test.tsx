@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { BookRow } from './BookRow';
 import '../../../../src/test-utils/matchMediaPolyfill';
-// Define Book type locally since '../../types' cannot be found
+
 type Book = {
   id: string;
   title: string;
