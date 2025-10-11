@@ -2,8 +2,9 @@ import { useMutation } from '@apollo/client';
 import { CREATE_BOOK } from '../api/mutations';
 import { useNavigate } from 'react-router-dom';
 import { Stack, Title, Text } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { BookForm, type BookFormValues } from '@/features/books';
-import { addBook } from '@/shared/lib/data/booksStore';
+import { addBook, removeBookById } from '@/shared/lib/data/booksStore';
 
 /**
  * CreatePage
@@ -43,16 +44,33 @@ export function CreatePage() {
       const { data } = await createBook({ variables: { input: values } });
       const newId = data?.createBook.id;
       if (newId != null) {
-        // Replace optimistic entry in-place could be added, but for now
-        // we navigate to the list which will show the optimistic item.
+        showNotification({
+          title: 'Created',
+          message: 'Book created successfully.',
+          color: 'green',
+        });
         void navigate('/books');
         return;
       }
-    } catch {
-      // ignore - optimistic entry remains until hard refresh
+    } catch (err) {
+      // Revert optimistic add
+      try {
+        // remove the optimistic id we inserted earlier
+        removeBookById(optimistic.id);
+      } catch {
+        // ignore
+      }
+      console.error('create failed', err);
+      showNotification({
+        title: 'Create failed',
+        message: 'Unable to create book. Please try again.',
+        color: 'red',
+      });
+      // Let user remain on the form to retry
+      return;
     }
 
-    // Fallback: navigate back to list regardless
+    // Fallback: navigate back to list
     void navigate('/books');
   }
 

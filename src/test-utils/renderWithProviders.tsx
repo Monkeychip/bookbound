@@ -42,6 +42,7 @@ function getMockedProvider(): any {
   }
 }
 import { render } from '@testing-library/react';
+import { InMemoryCache } from '@apollo/client';
 import TestingThemeProvider from './TestingThemeProvider';
 
 type Options = {
@@ -65,8 +66,36 @@ export function renderWithProviders(ui: React.ReactElement, options: Options = {
   const Wrapper = ({ children }: PropsWithChildren) => {
     const C = getMockedProvider();
     const Provider = C ?? ((p: any) => p.children);
+    // Create a fresh InMemoryCache for the test provider so the
+    // MockedProvider doesn't construct a cache with unwanted runtime
+    // options (which can trigger noisy warnings). We mirror the app's
+    // basic typePolicies so normalized reads (e.g. Query.book) still work
+    // in tests.
+    const testCache = new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            book: {
+              read(existing, { args, toReference }) {
+                return (
+                  existing ??
+                  (args?.id ? toReference({ __typename: 'Book', id: args.id }) : undefined)
+                );
+              },
+            },
+            books: {
+              keyArgs: ['search', ['sort', 'field'], ['sort', 'order']],
+              merge(_existing: any, incoming: any) {
+                return incoming;
+              },
+            },
+          },
+        },
+        BooksPage: { keyFields: false },
+      },
+    });
     return (
-      <Provider mocks={apolloMocks}>
+      <Provider mocks={apolloMocks} cache={testCache}>
         <TestingThemeProvider>
           <MemoryRouter {...routerProps} initialEntries={routerInitialEntries}>
             {children}

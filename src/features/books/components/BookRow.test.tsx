@@ -63,4 +63,14 @@ describe('BookRow', () => {
 
     expect(onDetails).toHaveBeenCalledWith('b1');
   });
+
+  it('throws when the provided onDelete handler throws (direct invocation)', () => {
+    const onDelete = vi.fn<(id: string) => void>(() => {
+      throw new Error('delete handler failed');
+    });
+
+    // calling the handler directly should throw — BookRow simply forwards the id
+    expect(() => onDelete('b1')).toThrow('delete handler failed');
+    expect(onDelete).toHaveBeenCalledWith('b1');
+  });
 });

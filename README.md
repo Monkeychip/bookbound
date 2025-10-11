@@ -178,6 +178,6 @@ Guidance:
 Small follow-ups to finalize the recent refactors and developer docs:
 
 - [ ] Add CONTRIBUTING.md / contributors guidelines
-- [ ] Add Toast messaging for success/error messaging on transitions.
+- [ ] Improve Toast messaging for success/error messaging on transitions
 - [ ] Build out mass-delete operations — see routing and batch API design
 - [ ] Add CI (GitHub Actions) for npm run build && npm run lint

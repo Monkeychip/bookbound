@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Group, Pagination, Stack, Text, Anchor } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { ListRow, ListToolbar, EmptyState } from '../../../shared/ui/components';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useMutation, useReactiveVar } from '@apollo/client';
@@ -83,12 +84,35 @@ export function ListPage({
   const [deleteBook] = useMutation(deleteMutation as DocumentNode);
 
   const handleDelete = async (id: string | number) => {
+    // Capture current item and index so we can restore on failure
+    const cur = booksVar();
+    const idx = cur.items.findIndex((b) => String(b.id) === String(id));
+    const removed = idx >= 0 ? cur.items[idx] : undefined;
+
     try {
       setDeletingId(id);
-      removeBookById(id); // optimistic
+      // optimistic remove
+      removeBookById(id);
+
       await deleteBook({ variables: { id }, optimisticResponse: { deleteBook: true } });
+
+      showNotification({ title: 'Deleted', message: 'Book removed successfully.', color: 'green' });
     } catch (err) {
+      // Revert optimistic removal if we still have the original
+      if (removed) {
+        const now = booksVar();
+        const items = [...now.items];
+        const insertAt = Math.min(Math.max(0, idx), items.length);
+        items.splice(insertAt, 0, removed);
+        booksVar({ ...now, items, total: Math.max(0, now.total + 1) });
+      }
+
       console.error('delete failed', err);
+      showNotification({
+        title: 'Delete failed',
+        message: 'Network error or server rejected the delete. Please try again.',
+        color: 'red',
+      });
     } finally {
       setDeletingId(null);
     }

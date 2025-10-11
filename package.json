@@ -26,7 +26,7 @@
     "e2e:report": "playwright show-report",
     "dev:server": "tsx watch server/index.ts",
     "prepare": "husky",
-    "test": "vitest"
+    "test": "npx vitest run --reporter=verbose --run"
   },
   "dependencies": {
     "@apollo/client": "^3.14.0",

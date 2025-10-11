@@ -4,6 +4,7 @@ import { BOOK_QUERY } from '../api/queries';
 import { UPDATE_BOOK } from '../api/mutations';
 import { BookCore } from '../api/fragments';
 import { Button, Group, Stack, Text, Title } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { BookForm, type BookFormValues } from '@/features/books';
 import { Link as RouterLink } from 'react-router-dom';
 import EmptyState from '@components/EmptyState';
@@ -104,20 +105,38 @@ export function EditPage() {
   const b = data.book;
 
   async function handleSubmit(values: BookFormValues) {
-    await updateBook({
-      variables: { input: { id: String(b.id), ...values } },
-      optimisticResponse: {
-        updateBook: {
-          __typename: 'Book',
-          id: b.id,
-          title: values.title,
-          author: values.author,
-          rating: values.rating,
-          description: values.description,
+    try {
+      await updateBook({
+        variables: { input: { id: String(b.id), ...values } },
+        optimisticResponse: {
+          updateBook: {
+            __typename: 'Book',
+            id: b.id,
+            title: values.title,
+            author: values.author,
+            rating: values.rating,
+            description: values.description,
+          },
         },
-      },
-    });
-    void navigate(`/books/${b.id}`);
+      });
+
+      showNotification({ title: 'Saved', message: 'Book updated successfully.', color: 'green' });
+      void navigate(`/books/${b.id}`);
+    } catch (err) {
+      console.error('update failed', err);
+      showNotification({
+        title: 'Save failed',
+        message: 'Unable to save changes. Please try again.',
+        color: 'red',
+      });
+      // Optionally offer a retry by refetching the detail
+      // Keep the user on the edit form so they can retry or cancel
+      try {
+        await refetch();
+      } catch {
+        // ignore refetch errors
+      }
+    }
   }
 
   return (
