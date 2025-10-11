@@ -16,6 +16,7 @@ export default defineConfig([
     // migrated from .eslintignore
     'src/test-utils/mantineMock.ts',
     'src/test-utils/mantineMock.tsx',
+    'e2e/**',
   ]),
   {
     files: ['**/*.{ts,tsx}'],

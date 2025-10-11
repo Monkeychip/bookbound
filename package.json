@@ -20,6 +20,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
+    "e2e": "playwright test",
+    "e2e:report": "playwright show-report",
     "dev:server": "tsx watch server/index.ts",
     "prepare": "husky",
     "test": "vitest"
