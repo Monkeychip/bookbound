@@ -4,38 +4,52 @@ A frontend rewrite starting with a clean React + Typescript foundation.
 
 ## Background
 
-**Next Chapter** began as a scrappy experiment — a small web app where friends could rate what they’re reading and discover new books.
-
-The MVP took off quickly: people loved logging their books, rating them, and trading recommendations.
-
-But the prototype was built for speed, not scale.
+**Next Chapter** started as a small side project for friends to rate and share books. The MVP grew fast — but it was built for speed, not scale.
 
 As Next Chapter’s user base grew, it became harder to maintain and nearly impossible to add new features like _Authors_, or _Reviews_ without breaking something.
 
 Now the team is making a **clean break from the past** to establish a strong, scalable foundation — one that future engineers can confidently build on.
 
-The goals for this rewrite:
+This rewrite focuses on creating a maintainable foundation. Goals include:
 
 - Define consistent **routing and navigation patterns**.
 - Establish a reusable **data-access and caching layer** with Apollo Client.
 - Demonstrate **CRUD flows** (create, edit, delete) for the Books feature.
 - Apply a **modern UI library (Mantine)** that can evolve into a design system.
-- Provide **unit/integration tests** to set expectations for future contributors.
+- Establish **unit and end-to-end tests** to model maintainable QA patterns.
 
 The result will serve as the blueprint for Next Chapter’s new frontend architecture — a maintainable, extensible codebase ready for future growth.
 
+## Tech Stack
+
+- **Framework:** React 19 + Vite + TypeScript
+- **Data Layer:** Apollo Client v3 (GraphQL local schema + reactive vars)
+- **UI:** Mantine 7 + custom theme utilities
+- **Testing:** Vitest (unit) + Playwright (e2e)
+- **Linting:** ESLint + Prettier + TypeScript strict mode
+
 ## Quick Start
 
-1. npm i
-2. Run the server: `npm run dev:server`
-   _Allows you to pretest query functions_
-3. Run the client: `npm run dev` → http://localhost:5173
+```
+npm install
+npm run dev:server   # Starts the mock GraphQL backend
+npm run dev          # Starts the Vite client → http://localhost:5173
+```
+
+Testing docs: see `docs/TESTING.md` for instructions on running unit tests (Vitest) and e2e tests (Playwright).
 
 ### Use of GenAI
 
 Parts of this project (documentation formatting, initial TypeScript scaffolding, and comments)
-were augmented using GenAI tools. All code, logic, and architectural decisions were reviewed
-and refined manually to ensure correctness and maintainability.
+were drafted with the aid of GenAI tools, then fully reviewed and refined manually to ensure correctness and maintainability.
+
+Test-related contributions: GenAI helped draft the initial test scaffolding and examples used during this rewrite. Concretely, it assisted in:
+
+- Designing the unit test bootstrap (a resilient `src/setupTests.ts`) that provides lightweight Mantine mocks and an Apollo-aware test setup.
+- Proposing a hoist-safe CommonJS mock pattern for Mantine so vitest runs stay fast and deterministic without Mantine internals.
+- Sketching a low-overhead Playwright e2e example that intercepts GraphQL requests and returns deterministic fixtures, which we used as a reliable smoke test template.
+
+All generated suggestions were reviewed and adapted by the author to match repository conventions and to ensure they were safe, maintainable, and well-typed.
 
 > ### ⚙️ About the Data
 >
@@ -50,8 +64,8 @@ and refined manually to ensure correctness and maintainability.
 >
 > This mapping is intentional: it keeps the focus on demonstrating the data
 > flow, pagination, and caching patterns you’d expect in a real GraphQL + React + Apollo app.
-> Think of it as the literary equivalent of a movie “based on a
-> true story” — work with me, and enjoy the ride 📚✨
+> Think of it as the literary equivalent of a movie “based on a true story” —
+> work with me, and enjoy the ride. 📚✨
 
 ### Dummy data & caching behavior
 
@@ -62,37 +76,11 @@ To provide a seamless UX and to demonstrate scalable caching patterns, the app:
 
 - Books list is seeded once into an application-level reactive var (`booksVar`) via `initBooksStore()` and used as the in-memory source-of-truth.
 - Creates and deletes are applied optimistically to `booksVar` so the UI updates instantly; the GraphQL mutations are still sent to DummyJSON.
-- Detail pages use a cache-redirect + `cache-first` so newly-created items can be read from the normalized cache without a failing network request.
-
-## Import aliases
-
-The project defines path aliases (configured in `tsconfig.json` and `vite.config.ts`) to keep imports concise and consistent. Use these aliases when importing shared modules or feature barrels.
-
-Primary aliases:
-
-- `@/*` — app-root shorthand for `src/` (use for absolute imports within the src tree)
-- `@features/*` — feature-level public barrels (e.g. `@features/books`)
-- `@assets/*` — static assets under `src/assets`
-- `@components/*` — shared UI primitives under `src/shared/ui/components`
-
-Guidance:
-
-- Prefer `@components/*` for truly shared UI primitives (buttons, lists, empty states, generic rows).
-- Prefer feature barrels (e.g. `@features/books`) to import pages, feature-local components and hooks.
-- Use `@/*` when you want an absolute path into the `src/` tree but there isn't a more specific alias.
-
-Examples:
-
-```ts
-import BreadcrumbsBar from '@components/BreadcrumbsBar';
-import { DetailPage } from '@features/books';
-import cover from '@assets/next-chapter-mark.svg';
-```
+- Detail pages use an Apollo `cacheRedirect` and `fetchPolicy: 'cache-first'`, allowing newly created items to resolve from the normalized cache without triggering a failing backend call.
 
 ## TypeScript patterns
 
-Small conventions we follow in this repo to keep runtime safety high and the
-type surface pleasant for reviewers.
+Type conventions that balance runtime safety with developer ergonomics.
 
 - Use `unknown` for external/untyped inputs (network JSON, third-party data).
   Never access properties on `unknown` directly — narrow it first with a
@@ -129,30 +117,66 @@ explanation of the repository's runtime-typing approach.
 
 ## Project structure
 
-This repository follows a feature-first layout with a small `app` area for
-application wiring and a `shared` area for UI primitives and libraries.
+This repository follows a feature-first layout: feature folders contain pages,
+components, and hooks for a single domain (for example `books`), while the
+`app/` area hosts application-level wiring (providers, routes, and the theme).
 
-Top-level folders you’ll use most:
+Top-level folders you'll use most:
 
 - `src/app/` — App composition and routing (providers, ThemeProvider, AppRoutes, Layout).
 - `src/features/<feature>/` — Feature-local code (pages, components, hooks, api). Example: `src/features/books/`.
-- `src/shared/` — Shared utilities and UI primitives used across features. We keep shared UI under `src/shared/ui/components`.
+- `src/shared/` — Shared utilities and UI primitives used across features (e.g. `src/shared/ui/components`).
 - `src/assets/` — Static images and svg assets.
 - `src/theme/` — Design tokens and theme utilities.
 
-Alias recap (matches tsconfig + vite):
+Quick visual (mini tree):
 
-- `@components/*` → `src/shared/ui/components/*`
-- `@features/*` → `src/features/*`
-- `@assets/*` → `src/assets/*`
+```text
+├── public/
+├── server/
+│   ├── index.ts
+│   └── schema.ts
+├── src/
+│   ├── app/
+│   │   ├── apollo.ts
+│   │   └── routes/
+│   │       └── AppRoutes.tsx
+│   ├── features/
+│   │   └── books/
+│   │       ├── BooksList.tsx
+│   │       └── BookDetail.tsx
+│   ├── shared/
+│   │   └── ui/
+│   │       └── components/
+│   ├── assets/
+│   │   └── next-chapter-mark.svg
+│   └── theme/
+└── package.json
+```
 
-If you reorganize files, prefer updating your import aliases or the feature barrel to minimize changes across the codebase.
+Use feature barrels and the path aliases (see "Import aliases" below) to keep imports concise when moving or reorganizing files.
+
+## Import aliases
+
+The project defines path aliases (configured in `tsconfig.json` and `vite.config.ts`) to keep imports concise and consistent. Use these aliases when importing shared modules or feature barrels.
+
+Primary aliases:
+
+- `@/*` — app-root shorthand for `src/` (use for absolute imports within the src tree)
+- `@features/*` — feature-level public barrels (e.g. `@features/books`)
+- `@assets/*` — static assets under `src/assets`
+- `@components/*` — shared UI primitives under `src/shared/ui/components`
+
+Guidance:
+
+- Prefer `@components/*` for truly shared UI primitives (buttons, lists, empty states, generic rows).
+- Prefer feature barrels (e.g. `@features/books`) to import pages, feature-local components and hooks.
+- Use `@/*` when you want an absolute path into the `src/` tree but there isn't a more specific alias.
 
 ## TODO
 
 Small follow-ups to finalize the recent refactors and developer docs:
 
-- [ ] Add a11y linting for tests (configure eslint-plugin-jsx-a11y for test environments)
 - [ ] Add CONTRIBUTING.md / contributors guidelines
 - [ ] Add Toast messaging for success/error messaging on transitions.
 - [ ] Build out mass-delete operations — see routing and batch API design

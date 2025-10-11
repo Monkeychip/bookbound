@@ -5,3 +5,4 @@ dist
 .env*
 npm-debug.log*
 playwright-report/
+test-results/

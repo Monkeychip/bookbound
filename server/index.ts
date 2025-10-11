@@ -16,7 +16,10 @@ async function main() {
     listen: { port: 4000 },
   });
 
-  console.log(`🚀 GraphQL ready at ${url}graphql`);
+  if (process.env.NODE_ENV !== 'test' && !process.env.CI) {
+    // helpful for local development but noisy in CI/test runs
+    console.log(`🚀 GraphQL ready at ${url}graphql`);
+  }
 }
 // Main entry function, with simple error handling for unhandled rejections.
 main().catch((err) => {
