@@ -21,6 +21,7 @@
     "format:check": "prettier --check .",
     "preview": "vite preview",
     "e2e": "playwright test",
+    "e2e:ci": "CI=true playwright test --reporter=list --project=chromium",
     "e2e:report": "playwright show-report",
     "dev:server": "tsx watch server/index.ts",
     "prepare": "husky",

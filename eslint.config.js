@@ -17,6 +17,8 @@ export default defineConfig([
     'src/test-utils/mantineMock.ts',
     'src/test-utils/mantineMock.tsx',
     'e2e/**',
+    // Playwright config runs outside the TS project used for linting
+    'playwright.config.ts',
   ]),
   {
     files: ['**/*.{ts,tsx}'],
