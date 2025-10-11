@@ -5,11 +5,15 @@ import { renderWithProviders } from '@/test-utils/renderWithProviders';
 import { ListPage } from '../ListPage';
 import { booksVar } from '@/shared/lib/data/booksStore';
 import { DELETE_BOOK } from '../../api/mutations';
+import { makeBook } from '@/test-utils/fixtures/books';
+import { buildMockedMutation } from '@/test-utils/graphqlMocks';
+import { expectNotificationWithTitle, clearNotifs } from '@/test-utils/expectNotifications';
 
 describe('ListPage', () => {
   beforeEach(() => {
     // reset store
     booksVar({ items: [], total: 0, initialized: true });
+    clearNotifs();
   });
 
   it('shows empty state when no books', () => {
@@ -41,22 +45,14 @@ describe('ListPage', () => {
     const user = userEvent.setup();
 
     booksVar({
-      items: [{ id: 'd1', title: 'Delete Me', author: 'X' }],
+      items: [makeBook({ id: 'd1', title: 'Delete Me', author: 'X' })],
       total: 1,
       initialized: true,
     });
 
     const mocks = [
-      {
-        request: { query: DELETE_BOOK, variables: { id: 'd1' } },
-        error: new Error('network error'),
-      },
+      buildMockedMutation({ query: DELETE_BOOK, variables: { id: 'd1' }, data: undefined }),
     ];
-
-    // clear any previous notifications and ensure test store exists
-    (
-      globalThis as unknown as { __TEST_NOTIFICATIONS__?: { clear?: () => void } }
-    ).__TEST_NOTIFICATIONS__?.clear?.();
 
     renderWithProviders(<ListPage />, { apolloMocks: mocks });
 
@@ -70,26 +66,24 @@ describe('ListPage', () => {
     expect(await screen.findByText('Delete Me')).toBeInTheDocument();
 
     // verify an error notification was shown
-    const calls =
-      (globalThis as unknown as { __TEST_NOTIFICATIONS__?: { calls?: unknown[] } })
-        .__TEST_NOTIFICATIONS__?.calls ?? [];
-    expect(
-      calls.some((c: unknown) =>
-        String((c as unknown as Record<string, unknown>)?.title).includes('Delete failed'),
-      ),
-    ).toBe(true);
+    expectNotificationWithTitle('Delete failed');
   });
 
   it('removes item from the list when delete mutation succeeds', async () => {
     const user = userEvent.setup();
 
-    booksVar({ items: [{ id: 'd2', title: 'Keep Me', author: 'Y' }], total: 1, initialized: true });
+    booksVar({
+      items: [makeBook({ id: 'd2', title: 'Keep Me', author: 'Y' })],
+      total: 1,
+      initialized: true,
+    });
 
     const mocks = [
-      {
-        request: { query: DELETE_BOOK, variables: { id: 'd2' } },
-        result: { data: { deleteBook: true } },
-      },
+      buildMockedMutation({
+        query: DELETE_BOOK,
+        variables: { id: 'd2' },
+        data: { deleteBook: true },
+      }),
     ];
 
     renderWithProviders(<ListPage />, { apolloMocks: mocks });
@@ -106,13 +100,6 @@ describe('ListPage', () => {
     });
 
     // verify a success notification was shown
-    const calls =
-      (globalThis as unknown as { __TEST_NOTIFICATIONS__?: { calls?: unknown[] } })
-        .__TEST_NOTIFICATIONS__?.calls ?? [];
-    expect(
-      calls.some((c: unknown) =>
-        String((c as unknown as Record<string, unknown>)?.title).includes('Deleted'),
-      ),
-    ).toBe(true);
+    expectNotificationWithTitle('Deleted');
   });
 });
